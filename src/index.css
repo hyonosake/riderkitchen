@@ -1,0 +1,75 @@
+:root {
+  --text: #262626;
+  --text-muted: #6b6560;
+  --heading: #262626;
+  --bg: #ffe8db;
+  --surface: #fff6ef;
+  --border: #f0d2be;
+  --accent: #b5472b;
+
+  font: 16px/1.5 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: light dark;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --text: #ffe8db;
+    --text-muted: #c9b8ac;
+    --heading: #ffe8db;
+    --bg: #262626;
+    --surface: #322f2f;
+    --border: #3f3a38;
+    --accent: #e0714c;
+  }
+}
+
+/* Дебаг-переключатель тёмной/светлой темы (App.tsx) — форсирует
+   инверсию цветов независимо от системной темы, чтобы можно было
+   посмотреть обе палитры без смены системных настроек. */
+:root[data-theme='dark'] {
+  --text: #ffe8db;
+  --text-muted: #c9b8ac;
+  --heading: #ffe8db;
+  --bg: #262626;
+  --surface: #322f2f;
+  --border: #3f3a38;
+  --accent: #e0714c;
+}
+
+:root[data-theme='light'] {
+  --text: #262626;
+  --text-muted: #6b6560;
+  --heading: #262626;
+  --bg: #ffe8db;
+  --surface: #fff6ef;
+  --border: #f0d2be;
+  --accent: #b5472b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--heading);
+  font-family: 'Fuzzy Bubbles', cursive;
+  font-weight: 700;
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+}
