@@ -1,0 +1,108 @@
+/* Hero: двухпанельная композиция, media 880. ПОРЯДОК КАСКАДА: партиалы подключаются строго по номерам в src/App.css — переставлять нельзя (см. AGENTS.md и docs/REFACTOR_PLAN.md). */
+
+/* ─── Hero ───────────────────────────────────────────────────────
+   Двухпанельная композиция: слева текст + CTA, справа постер-логотип
+   на натуральной пропорции (1680×994) — без object-fit: cover,
+   который обрезал плакат (см. docs/PLAN.md). */
+.hero {
+  padding: clamp(40px, 7vw, 88px) 20px 0;
+}
+
+.hero__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: center;
+}
+
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.hero__kicker {
+  font-family: var(--font-label);
+  font-weight: var(--w-label);
+  font-size: 12px;
+  text-transform: var(--tag-transform);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  padding: 6px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.hero__title {
+  font-size: clamp(38px, 5.5vw, 64px);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.hero__subtitle {
+  font-size: clamp(16px, 1.8vw, 19px);
+  line-height: 1.55;
+  color: var(--text-muted);
+  max-width: 46ch;
+}
+
+.hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.hero__media {
+  margin: 0;
+  position: relative;
+}
+
+.hero__media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 24px 48px -24px rgb(38 38 38 / 0.35);
+}
+
+/* Плавающий бейдж поверх постера: агрегат по сетам из контента. */
+.hero__badge {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  padding: 8px 14px;
+  font-family: var(--font-nav);
+  font-weight: var(--w-nav);
+  font-size: 13px;
+  font-variant-numeric: lining-nums;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: 0 8px 20px -10px rgb(38 38 38 / 0.4);
+}
+
+@media (max-width: 880px) {
+  .hero__inner {
+    grid-template-columns: 1fr;
+  }
+
+  /* Одна колонка почти на всю ширину экрана — равная доля в строке
+     (flex: 1) слишком узкая для номера телефона: «+7 (926) 910 10 10»
+     переносился посередине. Кнопки в столбик на всю ширину — удобнее
+     и большому пальцу, и длинному тексту. */
+  .hero__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero__actions .button {
+    flex: none;
+  }
+}

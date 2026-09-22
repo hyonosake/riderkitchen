@@ -1,5 +1,5 @@
 import type { Dish, DishTag } from '../content/types'
-import { formatPrice } from '../lib/format'
+import { PriceStepper } from './PriceStepper'
 
 const tagLabels: Record<DishTag, string> = {
   vegan: 'vegan',
@@ -7,17 +7,22 @@ const tagLabels: Record<DishTag, string> = {
   min5portions: 'заказ от 5 порций',
 }
 
-export function DishCard({ dish }: { dish: Dish }) {
+export function DishCard({
+  dish,
+  qty,
+  onQtyChange,
+}: {
+  dish: Dish
+  qty: number
+  onQtyChange: (qty: number) => void
+}) {
   return (
     <article className="dish-card">
       {dish.image && (
         <img className="dish-card__image" src={dish.image} alt={dish.name} loading="lazy" />
       )}
       <div className="dish-card__body">
-        <div className="dish-card__heading">
-          <h3 className="dish-card__name">{dish.name}</h3>
-          <span className="dish-card__price">{formatPrice(dish.price)}</span>
-        </div>
+        <h3 className="dish-card__name">{dish.name}</h3>
         {dish.description && <p className="dish-card__description">{dish.description}</p>}
         {dish.tags && dish.tags.length > 0 && (
           <ul className="dish-card__tags">
@@ -28,6 +33,18 @@ export function DishCard({ dish }: { dish: Dish }) {
             ))}
           </ul>
         )}
+        {/* Футер карточки прижат к низу (margin-top: auto), поэтому цена
+            стоит в одном месте у всех карточек строки, даже если описания
+            разной длины. */}
+        <footer className="dish-card__footer">
+          {/* Оценка калорийности — нижний левый угол карточки, цена —
+              в противоположном (правом); ≈ подчёркивает, что цифра
+              приблизительная (см. src/content/menu.ts). */}
+          {dish.calories != null && (
+            <span className="dish-card__kcal">≈ {dish.calories} ккал</span>
+          )}
+          <PriceStepper price={dish.price} name={dish.name} qty={qty} onQtyChange={onQtyChange} />
+        </footer>
       </div>
     </article>
   )

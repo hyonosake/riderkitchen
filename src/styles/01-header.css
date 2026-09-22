@@ -1,0 +1,234 @@
+/* Хедер: шапка, навигация, бургер, media 720/1099/360. ПОРЯДОК КАСКАДА: партиалы подключаются строго по номерам в src/App.css — переставлять нельзя (см. AGENTS.md и docs/REFACTOR_PLAN.md). */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.header__bar {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  /* Горизонтальный паддинг совпадает с main (20px) — иначе бургер и
+     корзина в шапке сидят заметно левее правого края карточек ниже. */
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+/* Кнопка корзины в хедере слева: иконка + сумма, бейдж количества
+   появляется, когда в корзине что-то есть. */
+.header__cart {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-nav);
+  font-weight: 600;
+  font-size: 15px;
+  font-variant-numeric: lining-nums;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.header__cart:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.header__cart-icon {
+  display: block;
+}
+
+.header__cart-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: lining-nums;
+}
+
+@media (max-width: 720px) {
+  .header__cart-total {
+    display: none;
+  }
+}
+
+.header__logo {
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.header__nav {
+  flex: 1;
+  overflow-x: auto;
+}
+
+.header__nav ul {
+  display: flex;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.header__nav a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-family: var(--font-nav);
+  font-size: 14px;
+  font-weight: var(--w-nav);
+}
+
+.header__nav a:hover {
+  color: var(--accent);
+}
+
+.header__phone {
+  text-decoration: none;
+  font-family: var(--font-nav);
+  font-weight: 700;
+  font-size: 16px;
+  white-space: nowrap;
+}
+
+.header__burger {
+  display: none;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.header__burger span {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--heading);
+  transition: top 0.25s ease, transform 0.25s ease, opacity 0.2s ease;
+}
+
+.header__burger span:nth-child(1) {
+  top: 10px;
+}
+
+.header__burger span:nth-child(2) {
+  top: 15px;
+}
+
+.header__burger span:nth-child(3) {
+  top: 20px;
+}
+
+/* Открытое состояние: верхняя и нижняя линии сходятся к центру и
+   разворачиваются в крестик, средняя растворяется — трансформ, а
+   не смена иконки, чтобы переход был плавным. */
+.header__burger--open span:nth-child(1) {
+  top: 15px;
+  transform: rotate(45deg);
+}
+
+.header__burger--open span:nth-child(2) {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.header__burger--open span:nth-child(3) {
+  top: 15px;
+  transform: rotate(-45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header__burger span {
+    transition: none;
+  }
+}
+
+@media (max-width: 1099px) {
+  .header__nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex: none;
+    overflow-x: visible;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    box-shadow: 0 8px 16px -8px rgb(0 0 0 / 0.15);
+  }
+
+  .header__nav--open {
+    display: block;
+  }
+
+  .header__nav ul {
+    flex-direction: column;
+    gap: 0;
+    white-space: normal;
+    padding: 4px 20px 12px;
+  }
+
+  .header__nav li:not(:last-child) a {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header__nav a {
+    display: block;
+    padding: 12px 0;
+    font-size: 15px;
+  }
+
+  .header__phone {
+    display: none;
+  }
+
+  .header__burger {
+    display: flex;
+  }
+}
+
+/* Экраны ~320px: дефолтный gap 32px вместе с nowrap-логотипом не
+   оставляет места корзине и бургеру — строка переполняет вьюпорт на
+   несколько пикселей (нашёл e2e-тест переполнения). Компактный gap;
+   с ~360px строка помещается и так, поэтому 375px+ и десктоп не
+   затронуты. */
+@media (max-width: 360px) {
+  .header__bar {
+    gap: 16px;
+  }
+
+  .header__logo {
+    font-size: 20px;
+  }
+}

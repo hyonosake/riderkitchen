@@ -1,0 +1,76 @@
+/* main и .menu-section*, media 1800. ПОРЯДОК КАСКАДА: партиалы подключаются строго по номерам в src/App.css — переставлять нельзя (см. AGENTS.md и docs/REFACTOR_PLAN.md). */
+
+main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.menu-section {
+  padding: 56px 0 16px;
+  border-top: 1px solid var(--border);
+}
+
+.menu-section:first-child {
+  border-top: none;
+}
+
+/* Шапка раздела: номер — заголовок — счётчик позиций справа. */
+.menu-section__head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.menu-section__index {
+  font-family: var(--font-label);
+  font-weight: var(--w-label);
+  font-variant-numeric: lining-nums;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+
+.menu-section__title {
+  font-size: clamp(26px, 3.4vw, 36px);
+  text-wrap: balance;
+}
+
+.menu-section__count {
+  margin-left: auto;
+  font-family: var(--font-label);
+  font-weight: var(--w-label);
+  font-variant-numeric: lining-nums;
+  font-size: 12px;
+  text-transform: var(--tag-transform);
+  letter-spacing: var(--tag-tracking);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.menu-section__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+/* Широкие 4K-мониторы: даём макету больше воздуха и 4 карточки в
+   строке вместо 3, а не просто растягиваем те же 3 колонки шире. */
+@media (min-width: 1800px) {
+  main,
+  .header__bar,
+  .hero__inner {
+    max-width: 1440px;
+  }
+
+  .menu-section__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.menu-section__note {
+  margin-top: 24px;
+  color: var(--text-muted);
+  font-size: 14px;
+}

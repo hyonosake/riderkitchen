@@ -4,10 +4,24 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rider Kitchen</title>
+    <script>
+      // Раннее применение сохранённого шрифтового варианта (до монтирования
+      // React), чтобы при перезагрузке не мигала дефолтная пара.
+      // Вариант B зашит в :root как дефолт, применяем только a/c/d/e.
+      try {
+        var savedFonts = localStorage.getItem('rk-fonts')
+        if (savedFonts && ['a', 'c', 'd', 'e'].indexOf(savedFonts) !== -1) {
+          document.documentElement.setAttribute('data-fonts', savedFonts)
+        }
+      } catch (e) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Тестовая подборка шрифтов (FontDebugToggle): дефолтная пара
+         Fuzzy Bubbles + Nunito плюс кандидаты вариантов A–E.
+         После выбора финальной пары лишние семейства убрать. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,500&family=Alegreya+Sans+SC:wght@500&family=Alegreya+Sans:wght@400;500;700&family=Fuzzy+Bubbles:wght@400;700&family=Manrope:wght@400;600;700&family=Nunito:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Philosopher:wght@400;700&display=swap"
       rel="stylesheet"
     />
   </head>

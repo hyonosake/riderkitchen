@@ -5,30 +5,105 @@
   --bg: #ffe8db;
   --surface: #fff6ef;
   --border: #f0d2be;
-  --accent: #b5472b;
+  /* Акцент — травяной зелёный: комплементарен персиковому фону,
+     считывается как «свежесть/еда» и не конфликтует с ценами
+     конкурентов в терракоте. */
+  --accent: #3a7d44;
 
-  font: 16px/1.5 'Nunito', system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* Шрифтовые роли (тестовая переключалка, src/components/FontDebugToggle.tsx).
+     Дефолт — вариант B, выбранный после теста A–E: Philosopher в
+     разделах/лого, Onest в названиях блюд и функциональном тексте.
+     Остальные сочетания остаются атрибутами [data-fonts] на <html>
+     для сравнения. */
+  --font-heading: 'Philosopher', system-ui, sans-serif; /* разделы, h1-h3, лого */
+  --font-dish: 'Onest', system-ui, sans-serif; /* названия блюд */
+  --font-nav: 'Onest', system-ui, sans-serif; /* навигация, телефон */
+  --font-body: 'Onest', system-ui, sans-serif; /* описания, списки, сноски */
+  --font-label: 'Onest', system-ui, sans-serif; /* метки (капс) */
+  --font-price: 'Onest', system-ui, sans-serif; /* цены */
+
+  --w-dish: 600;
+  --w-nav: 500;
+  --w-label: 600;
+  --w-price: 700;
+  --tag-transform: uppercase;
+  --tag-tracking: 0.06em;
+
+  font: 16px/1.5 var(--font-body);
+  /* Цифры ровно по линии (метки, цены, телефон). У Alegreya и
+     Alegreya Sans по умолчанию старостильные «прыгающие» цифры,
+     остальным вариантам правило не мешает. */
+  font-variant-numeric: lining-nums;
   color-scheme: light dark;
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']) {
-    --text: #ffe8db;
-    --text-muted: #c9b8ac;
-    --heading: #ffe8db;
-    --bg: #262626;
-    --surface: #322f2f;
-    --border: #3f3a38;
-    --accent: #e0714c;
-  }
+/* A — Philosopher (разделы + названия блюд) + Onest. Главный кандидат. */
+:root[data-fonts='a'] {
+  --font-heading: 'Philosopher', system-ui, sans-serif;
+  --font-dish: 'Philosopher', system-ui, sans-serif;
+  --font-nav: 'Onest', system-ui, sans-serif;
+  --font-body: 'Onest', system-ui, sans-serif;
+  --font-label: 'Onest', system-ui, sans-serif;
+  --font-price: 'Onest', system-ui, sans-serif;
+  --w-nav: 500;
+  --tag-tracking: 0.06em;
 }
 
-/* Дебаг-переключатель тёмной/светлой темы (App.tsx) — форсирует
-   инверсию цветов независимо от системной темы, чтобы можно было
-   посмотреть обе палитры без смены системных настроек. */
+/* C — Philosopher + Alegreya Sans, метки — Alegreya Sans SC (настоящая
+   капитель, поэтому без text-transform). */
+:root[data-fonts='c'] {
+  --font-heading: 'Philosopher', system-ui, sans-serif;
+  --font-dish: 'Philosopher', system-ui, sans-serif;
+  --font-nav: 'Alegreya Sans', system-ui, sans-serif;
+  --font-body: 'Alegreya Sans', system-ui, sans-serif;
+  --font-label: 'Alegreya Sans SC', system-ui, sans-serif;
+  --font-price: 'Alegreya Sans', system-ui, sans-serif;
+  --w-nav: 500;
+  --w-label: 500;
+  --w-price: 700;
+  --tag-transform: none;
+  --tag-tracking: 0.06em;
+}
+
+/* D — Alegreya + Alegreya Sans, серифный контроль (ближе к Fraunces).
+   У Alegreya старостильные цифры — lining-nums обязателен (см. .dish-tag,
+   .dish-card__price в App.css). */
+:root[data-fonts='d'] {
+  --font-heading: 'Alegreya', Georgia, serif;
+  --font-dish: 'Alegreya', Georgia, serif;
+  --font-nav: 'Alegreya Sans', system-ui, sans-serif;
+  --font-body: 'Alegreya Sans', system-ui, sans-serif;
+  --font-label: 'Alegreya Sans SC', system-ui, sans-serif;
+  --font-price: 'Alegreya Sans', system-ui, sans-serif;
+  --w-dish: 500;
+  --w-nav: 500;
+  --w-label: 500;
+  --w-price: 700;
+  --tag-transform: none;
+  --tag-tracking: 0.06em;
+}
+
+/* E — Philosopher + Manrope: неровные заголовки на фоне аккуратной
+   геометрии, более «дорогой» контраст. */
+:root[data-fonts='e'] {
+  --font-heading: 'Philosopher', system-ui, sans-serif;
+  --font-dish: 'Philosopher', system-ui, sans-serif;
+  --font-nav: 'Manrope', system-ui, sans-serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-label: 'Manrope', system-ui, sans-serif;
+  --font-price: 'Manrope', system-ui, sans-serif;
+  --w-nav: 600;
+  --w-label: 700;
+  --w-price: 700;
+  --tag-tracking: 0.06em;
+}
+
+/* Тема по умолчанию — светлая (решение после теста). Тёмная включается
+   только явно через data-theme='dark' — дебаг-тумблером в App.tsx,
+   без привязки к системной prefers-color-scheme. */
 :root[data-theme='dark'] {
   --text: #ffe8db;
   --text-muted: #c9b8ac;
@@ -36,32 +111,40 @@
   --bg: #262626;
   --surface: #322f2f;
   --border: #3f3a38;
-  --accent: #e0714c;
-}
-
-:root[data-theme='light'] {
-  --text: #262626;
-  --text-muted: #6b6560;
-  --heading: #262626;
-  --bg: #ffe8db;
-  --surface: #fff6ef;
-  --border: #f0d2be;
-  --accent: #b5472b;
+  --accent: #8ccfa0;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  /* Якорные переходы не прячут заголовки секций под sticky-хедером. */
+  scroll-padding-top: 88px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
+}
+
+/* Видимый фокус на всех интерактивных элементах — доступность. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 h1,
 h2,
 h3 {
   color: var(--heading);
-  font-family: 'Fuzzy Bubbles', cursive;
+  font-family: var(--font-heading);
   font-weight: 700;
   margin: 0;
 }

@@ -1,0 +1,285 @@
+/* Карточки: .dish-card*, .set-card*, .price-pill*, tags, media 520/360. ПОРЯДОК КАСКАДА: партиалы подключаются строго по номерам в src/App.css — переставлять нельзя (см. AGENTS.md и docs/REFACTOR_PLAN.md). */
+
+.dish-card,
+.set-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.dish-card__image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.dish-card__body,
+.set-card__body {
+  padding: 16px;
+  /* Флекс-колонка + flex: 1: тело растягивается на всю высоту
+     карточки, поэтому margin-top: auto у футера прижимает цену
+     именно к нижнему краю карточки, а не к концу текста. */
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.dish-card__name {
+  font-family: var(--font-dish);
+  font-weight: var(--w-dish);
+  font-size: 16px;
+}
+
+/* Футер карточки: цена в нижнем правом углу, прижата вниз при
+   разной высоте описаний в одной строке сетки. flex-wrap: активный
+   степпер (−/+) шире обычной цены и в узкой 2-колоночной мобильной
+   карточке не помещается рядом с калоражем — переносится на свою
+   строку вместо наезда на калораж/край карточки. */
+.dish-card__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  row-gap: 6px;
+  margin: auto 0 0;
+  padding-top: 12px;
+}
+
+/* Оценка калорийности — нижний левый угол карточки
+   (цена прижата в противоположный, правый). */
+.dish-card__kcal {
+  margin-right: auto;
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: lining-nums;
+}
+
+/* Цена-кнопка (PriceStepper): пилюля с инверсией на ховере.
+   min-width не даёт раскладке дрожать, когда цена меняется
+   на степпер с другой шириной. */
+.price-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 88px;
+  min-height: 36px;
+  padding: 6px 14px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  font-family: var(--font-price);
+  font-weight: 700;
+  font-size: 18px;
+  font-variant-numeric: lining-nums;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--accent);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.price-pill:hover {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+/* Активное состояние: кнопка залита акцентом, − и + по краям,
+   цена за единицу в центре. */
+.price-pill--active {
+  gap: 2px;
+  padding: 3px 4px;
+  min-width: 124px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.price-pill__step {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font-family: var(--font-price);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1;
+  color: inherit;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.price-pill__step:hover {
+  background: color-mix(in srgb, var(--bg) 25%, transparent);
+}
+
+.price-pill__unit {
+  min-width: 60px;
+  text-align: center;
+  font-variant-numeric: lining-nums;
+}
+
+/* Количество порций сбоку от кнопки — мелким приглушённым
+   текстом, как «x 3» на референсе. margin-left: auto — гарантирует
+   прижатие к правому краю, даже когда .dish-card__footer переносит
+   степпер на отдельную строку (см. flex-wrap там): justify-content
+   на обёрнутой строке с одним элементом прижатия не даёт. */
+.price-stepper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.price-pill__count {
+  font-size: 14px;
+  line-height: 1.2;
+  color: var(--text-muted);
+  white-space: nowrap;
+  font-variant-numeric: lining-nums;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .price-pill,
+  .price-pill__step {
+    transition: none;
+  }
+}
+
+.dish-card__description {
+  margin-top: 8px;
+  /* Описания наследуют var(--font-body) от :root; вес 400 фиксирован,
+     т.к. светлый текст на тёмном визуально толще. */
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+/* Компактные размеры карточек и ценника в двухколоночной сетке
+   (см. .menu-section__grid ниже). Блок стоит здесь, а не сразу у
+   .menu-section__grid — иначе при равной специфичности его перебивали
+   бы более поздние безусловные правила .price-pill и .dish-card из
+   этого же файла (баг: на мобильных рендерился десктопный размер
+   ценника/степпера, на 320px он вылезал за левый край карточки). */
+@media (max-width: 520px) {
+  .menu-section__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .dish-card__body,
+  .set-card__body {
+    padding: 10px;
+  }
+
+  .dish-card__name {
+    font-size: 14px;
+  }
+
+  .dish-card__description {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  /* Цена чуть компактнее в двухколоночной сетке, но остаётся
+     заметной и прижатой к низу карточки. */
+  .price-pill {
+    font-size: 15px;
+    min-width: 76px;
+    min-height: 32px;
+  }
+
+  .price-pill--active {
+    min-width: 108px;
+  }
+
+  .price-pill__unit {
+    min-width: 52px;
+  }
+
+  .price-pill__step {
+    width: 26px;
+    height: 26px;
+    font-size: 15px;
+  }
+
+  .price-pill__count {
+    font-size: 12px;
+  }
+
+  .dish-card__kcal {
+    font-size: 10px;
+  }
+}
+
+/* Экраны ~320px: даже на своей строке (см. flex-wrap у
+   .dish-card__footer) активный степпер (два круглых шага + цена за
+   единицу + «× N») шире доступной ширины 2-колоночной карточки —
+   обрезался/выходил за скруглённый край. Дожимаем отступы карточки,
+   шаги степпера и зазоры. */
+@media (max-width: 360px) {
+  .dish-card__body,
+  .set-card__body {
+    padding: 8px;
+  }
+
+  .price-pill--active {
+    min-width: 84px;
+    font-size: 13px;
+  }
+
+  .price-pill__step {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
+
+  .price-pill__unit {
+    min-width: 40px;
+  }
+
+  .price-stepper {
+    gap: 3px;
+  }
+}
+
+.dish-card__tags {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  flex-wrap: wrap;
+}
+
+.dish-tag {
+  font-family: var(--font-label);
+  font-weight: var(--w-label);
+  font-variant-numeric: lining-nums;
+  font-size: 11px;
+  text-transform: var(--tag-transform);
+  letter-spacing: var(--tag-tracking);
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+
+.set-card__items {
+  margin: 10px 0 0;
+  padding-left: 18px;
+  /* Наследует var(--font-body) от :root. */
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--text-muted);
+}

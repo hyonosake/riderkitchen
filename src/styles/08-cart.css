@@ -1,0 +1,216 @@
+/* Корзина: overlay + drawer + позиции. ПОРЯДОК КАСКАДА: партиалы подключаются строго по номерам в src/App.css — переставлять нельзя (см. AGENTS.md и docs/REFACTOR_PLAN.md). */
+
+/* ─── Корзина: overlay + drawer ────────────────────────────────── */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgb(38 38 38 / 0.45);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.cart-overlay--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  width: min(420px, 100vw);
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: -16px 0 40px -20px rgb(38 38 38 / 0.4);
+  transform: translateX(105%);
+  visibility: hidden;
+  transition: transform 0.25s ease, visibility 0s linear 0.25s;
+}
+
+.cart-drawer--open {
+  transform: translateX(0);
+  visibility: visible;
+  transition: transform 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cart-overlay,
+  .cart-drawer {
+    transition: none;
+  }
+}
+
+.cart-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cart-drawer__title {
+  font-size: 22px;
+}
+
+.cart-drawer__count {
+  font-family: var(--font-label);
+  font-weight: var(--w-label);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cart-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.cart-drawer__close:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cart-drawer__clear {
+  align-self: flex-start;
+  margin: 10px 20px 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.cart-drawer__clear:hover {
+  color: var(--accent);
+}
+
+.cart-drawer__empty {
+  padding: 28px 20px;
+  color: var(--text-muted);
+}
+
+.cart-drawer__list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 16px 20px;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cart-item {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.cart-item__info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.cart-item__name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.cart-item__sum {
+  font-weight: 700;
+  font-variant-numeric: lining-nums;
+  white-space: nowrap;
+  color: var(--accent);
+}
+
+/* Внутри корзины степпер компактнее: сумма позиции уже показана
+   справа от названия, «× N» не нужен. */
+.cart-item .price-pill--active {
+  min-width: 0;
+}
+
+.cart-item .price-pill__unit {
+  min-width: 0;
+  padding: 0 4px;
+  font-size: 15px;
+}
+
+.cart-drawer__foot {
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cart-drawer__total {
+  font-size: 16px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.cart-drawer__total strong {
+  font-size: 20px;
+  font-variant-numeric: lining-nums;
+  color: var(--accent);
+}
+
+.cart-drawer__phone-label {
+  font-family: var(--font-label);
+  font-weight: var(--w-label);
+  font-size: 11px;
+  text-transform: var(--tag-transform);
+  letter-spacing: var(--tag-tracking);
+  color: var(--text-muted);
+}
+
+.cart-drawer__phone {
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  font: inherit;
+  font-variant-numeric: lining-nums;
+  color: var(--text);
+}
+
+.cart-drawer__submit {
+  width: 100%;
+}
+
+.cart-drawer__pdf {
+  width: 100%;
+  font-size: 14px;
+  padding: 10px 18px;
+}
+
+/* Кнопка «Сформировать заказ» без телефона — визуально неактивна. */
+.cart-drawer__submit[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
