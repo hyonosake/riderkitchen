@@ -84,7 +84,7 @@
 
 .price-pill:hover {
   background: var(--accent);
-  color: var(--bg);
+  color: var(--on-accent);
 }
 
 /* Активное состояние: кнопка залита акцентом, − и + по краям,
@@ -95,7 +95,7 @@
   min-width: 124px;
   background: var(--accent);
   border-color: var(--accent);
-  color: var(--bg);
+  color: var(--on-accent);
 }
 
 .price-pill__step {

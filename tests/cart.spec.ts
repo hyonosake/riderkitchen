@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs'
 import { expect, type Page, test } from '@playwright/test'
 import { collectRuntimeErrors } from './support'
 
@@ -17,9 +18,11 @@ import { collectRuntimeErrors } from './support'
 // - exportPdf.ts: jsPDF сохраняет файл rider-kitchen-order.pdf
 //   (page.waitForEvent('download')).
 
-// Первая карточка меню — стабильная позиция для сценариев.
+// Первая карточка меню — стабильная позиция для сценариев. Именно
+// .dish-card: у сетов (первый раздел) тоже .dish-card__name, но
+// карточка — .set-card.
 async function firstDish(page: Page): Promise<{ name: string; price: number }> {
-  const name = (await page.locator('.dish-card__name').first().innerText()).trim()
+  const name = (await page.locator('.dish-card .dish-card__name').first().innerText()).trim()
   const addLabel = await page
     .getByRole('button', { name: `Добавить «${name}» в заказ` })
     .first()
@@ -171,12 +174,18 @@ test.describe('экспорт в PDF', () => {
     const pdfButton = page.locator('.cart-drawer__pdf')
     await expect(pdfButton).toBeEnabled()
 
-    // exportPdf.ts динамически импортирует jspdf + html2canvas-pro
+    // exportPdf.ts динамически импортирует jspdf, рисует лист векторно
     // и вызывает pdf.save('rider-kitchen-order.pdf') → download-событие.
     const downloadPromise = page.waitForEvent('download')
     await pdfButton.click()
     const download = await downloadPromise
     expect(download.suggestedFilename()).toBe('rider-kitchen-order.pdf')
+
+    // Векторный PDF, а не снимок-картинка: текст набран встроенными
+    // шрифтами сайта (Onest) — есть FontFile2 и имя шрифта.
+    const pdfText = readFileSync(await download.path(), 'latin1')
+    expect(pdfText).toContain('/FontFile2')
+    expect(pdfText).toContain('Onest')
 
     expect(pageErrors).toEqual([])
     expect(consoleErrors).toEqual([])

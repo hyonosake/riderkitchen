@@ -17,6 +17,7 @@ for (const category of menu) {
             description: dish.description,
             price: dish.price,
             calories: dish.calories,
+            tags: dish.tags,
             image: dish.image,
         })
     }
@@ -28,6 +29,7 @@ for (const set of sets) {
         description: set.items.join(', '),
         price: set.price,
         calories: set.calories,
+        tags: set.tags,
         image: set.image,
     })
 }

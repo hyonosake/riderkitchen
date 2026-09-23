@@ -1,11 +1,6 @@
-import type { Dish, DishTag } from '../content/types'
+import type { Dish } from '../content/types'
+import { tagLabels } from '../content/tags'
 import { PriceStepper } from './PriceStepper'
-
-const tagLabels: Record<DishTag, string> = {
-  vegan: 'vegan',
-  seasonal: 'сезонное',
-  min5portions: 'заказ от 5 порций',
-}
 
 export function DishCard({
   dish,

@@ -209,8 +209,74 @@
   padding: 10px 18px;
 }
 
-/* Кнопка «Сформировать заказ» без телефона — визуально неактивна. */
-.cart-drawer__submit[aria-disabled='true'] {
+/* Неактивные кнопки: «Сформировать заказ» без телефона и «Сохранить
+   в PDF» при пустой корзине (или пока PDF готовится). */
+.cart-drawer__submit[aria-disabled='true'],
+.cart-drawer__pdf:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Без подпрыгивания при наведении на неактивную кнопку. */
+.cart-drawer__submit[aria-disabled='true']:hover,
+.cart-drawer__pdf:disabled:hover {
+  transform: none;
+}
+
+/* ─── Нижняя панель корзины (CartBar.tsx, только ≤720px) ─────────
+   sticky у нижнего края вьюпорта; в конце страницы встаёт в поток
+   после футера. Ниже drawer'а и overlay (z-index 90/100). */
+.cart-bar {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .cart-bar {
+    display: block;
+    position: sticky;
+    bottom: 0;
+    z-index: 60;
+    padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, var(--bg) 60%, transparent);
+  }
+
+  .cart-bar__button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-family: var(--font-nav);
+    font-size: 15px;
+    font-variant-numeric: lining-nums;
+    cursor: pointer;
+    box-shadow: 0 10px 24px -10px rgb(38 38 38 / 0.55);
+  }
+
+  .cart-bar__total {
+    font-weight: 700;
+  }
+
+  .cart-bar__action {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 720px) and (prefers-reduced-motion: no-preference) {
+  .cart-bar {
+    animation: cart-bar-in 0.25s ease-out;
+  }
+}
+
+@keyframes cart-bar-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
 }

@@ -1,4 +1,5 @@
 import type { MenuSet } from '../content/types'
+import { tagLabels } from '../content/tags'
 import { pluralizeRu } from '../lib/format'
 import { PriceStepper } from './PriceStepper'
 
@@ -37,6 +38,15 @@ export function SetsSection({
                   <li key={item}>{item}</li>
                 ))}
               </ul>
+              {set.tags && set.tags.length > 0 && (
+                <ul className="dish-card__tags">
+                  {set.tags.map((tag) => (
+                    <li key={tag} className={`dish-tag dish-tag--${tag}`}>
+                      {tagLabels[tag]}
+                    </li>
+                  ))}
+                </ul>
+              )}
               <footer className="dish-card__footer">
                 {/* Калораж — нижний левый угол, цена — в противоположном. */}
                 {set.calories != null && (

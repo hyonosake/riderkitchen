@@ -1,16 +1,14 @@
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import type { CartItem } from '../content/types'
 import { formatPrice, formatPhoneRu, isPhoneRuComplete, pluralizeRu } from '../lib/format'
 import { buildOrderText, buildWhatsAppHref } from '../lib/order'
-import { exportElementToPdf } from '../lib/exportPdf'
+import { exportOrderPdf } from '../lib/exportPdf'
 import { QtyStepper } from './PriceStepper'
-import { CartPdfSheet } from './CartPdfSheet'
 
 // Корзина — выезжающая панель справа (drawer): список позиций со
 // степперами, телефон РФ, «Сформировать заказ» (открывает WhatsApp
-// с готовым текстом) и вторичная «Сохранить в PDF» (генерирует файл
-// и скачивает его на ПК пользователя). Скрытый PDF-лист — отдельный
-// компонент CartPdfSheet.
+// с готовым текстом) и вторичная «Сохранить в PDF» (рисует векторный
+// PDF в src/lib/exportPdf.ts и скачивает его на ПК пользователя).
 export function CartDrawer({
   items,
   total,
@@ -28,7 +26,6 @@ export function CartDrawer({
 }) {
   const [phone, setPhone] = useState('')
   const [isPdfBusy, setIsPdfBusy] = useState(false)
-  const pdfSheetRef = useRef<HTMLDivElement>(null)
   const phoneComplete = isPhoneRuComplete(phone)
 
   const count = items.reduce((sum, item) => sum + item.qty, 0)
@@ -36,11 +33,10 @@ export function CartDrawer({
   const whatsappHref = buildWhatsAppHref(buildOrderText(items, total, phone))
 
   const handlePdf = async () => {
-    const sheet = pdfSheetRef.current
-    if (!sheet || isPdfBusy) return
+    if (isPdfBusy || items.length === 0) return
     setIsPdfBusy(true)
     try {
-      await exportElementToPdf(sheet, 'rider-kitchen-order.pdf')
+      await exportOrderPdf({ items, total, phone }, 'rider-kitchen-order.pdf')
     } finally {
       setIsPdfBusy(false)
     }
@@ -141,8 +137,7 @@ export function CartDrawer({
           >
             Сформировать заказ
           </a>
-          {/* Генерация PDF и скачивание файла: снимок скрытого
-              pdf-листа (CartPdfSheet) → файл на ПК. */}
+          {/* Генерация векторного PDF и скачивание файла на ПК. */}
           <button
             type="button"
             className="button button--ghost cart-drawer__pdf"
@@ -154,7 +149,6 @@ export function CartDrawer({
         </footer>
       </aside>
 
-      <CartPdfSheet items={items} total={total} phone={phone} sheetRef={pdfSheetRef} />
     </>
   )
 }
