@@ -1,4 +1,10 @@
-:root {
+/* Цветовые токены светлого набора. Второй селектор — PDF заказа:
+   src/lib/exportPdf.ts читает токены с временного узла .pdf-sheet и
+   всегда получает светлый набор активной палитры, даже при тёмной
+   теме сайта (тёмный PDF плохо печатается). То же — у каждой палитры
+   ниже. */
+:root,
+:root[data-theme='dark'] .pdf-sheet {
   --text: #262626;
   --text-muted: #6b6560;
   --heading: #262626;
@@ -9,12 +15,15 @@
      считывается как «свежесть/еда» и не конфликтует с ценами
      конкурентов в терракоте. */
   --accent: #3a7d44;
+  /* Текст/иконки поверх заливки акцентом (кнопки, бейджи, степпер). */
+  --on-accent: #ffffff;
+}
 
-  /* Шрифтовые роли (тестовая переключалка, src/components/FontDebugToggle.tsx).
+:root {
+  /* Шрифтовые роли (дебаг-переключалка, src/components/DebugVariantToggle.tsx).
      Дефолт — вариант B, выбранный после теста A–E: Philosopher в
      разделах/лого, Onest в названиях блюд и функциональном тексте.
-     Остальные сочетания остаются атрибутами [data-fonts] на <html>
-     для сравнения. */
+     Новые альтернативы F–I — атрибутом [data-fonts] на <html>. */
   --font-heading: 'Philosopher', system-ui, sans-serif; /* разделы, h1-h3, лого */
   --font-dish: 'Onest', system-ui, sans-serif; /* названия блюд */
   --font-nav: 'Onest', system-ui, sans-serif; /* навигация, телефон */
@@ -30,9 +39,8 @@
   --tag-tracking: 0.06em;
 
   font: 16px/1.5 var(--font-body);
-  /* Цифры ровно по линии (метки, цены, телефон). У Alegreya и
-     Alegreya Sans по умолчанию старостильные «прыгающие» цифры,
-     остальным вариантам правило не мешает. */
+  /* Цифры ровно по линии (метки, цены, телефон): у Playfair Display
+     (вариант H) по умолчанию старостильные «прыгающие» цифры. */
   font-variant-numeric: lining-nums;
   color-scheme: light dark;
   color: var(--text);
@@ -40,65 +48,43 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* A — Philosopher (разделы + названия блюд) + Onest. Главный кандидат. */
-:root[data-fonts='a'] {
-  --font-heading: 'Philosopher', system-ui, sans-serif;
-  --font-dish: 'Philosopher', system-ui, sans-serif;
-  --font-nav: 'Onest', system-ui, sans-serif;
-  --font-body: 'Onest', system-ui, sans-serif;
-  --font-label: 'Onest', system-ui, sans-serif;
-  --font-price: 'Onest', system-ui, sans-serif;
-  --w-nav: 500;
-  --tag-tracking: 0.06em;
+/* Альтернативы дефолту B (переключалка FontDebugToggle → DebugVariantToggle,
+   списки — src/content/debugVariants.ts). Все семейства — с кириллицей. */
+
+/* F — Unbounded + Onest: широкий «афишный» гротеск, перекликается с
+   рублеными буквами логотипа-плаката. */
+:root[data-fonts='f'] {
+  --font-heading: 'Unbounded', system-ui, sans-serif;
+  --font-dish: 'Onest', system-ui, sans-serif;
 }
 
-/* C — Philosopher + Alegreya Sans, метки — Alegreya Sans SC (настоящая
-   капитель, поэтому без text-transform). */
-:root[data-fonts='c'] {
-  --font-heading: 'Philosopher', system-ui, sans-serif;
-  --font-dish: 'Philosopher', system-ui, sans-serif;
-  --font-nav: 'Alegreya Sans', system-ui, sans-serif;
-  --font-body: 'Alegreya Sans', system-ui, sans-serif;
-  --font-label: 'Alegreya Sans SC', system-ui, sans-serif;
-  --font-price: 'Alegreya Sans', system-ui, sans-serif;
-  --w-nav: 500;
-  --w-label: 500;
-  --w-price: 700;
-  --tag-transform: none;
-  --tag-tracking: 0.06em;
+/* G — Montserrat + Golos Text: геометрия, ближайшая к логотипу
+   (Gotham-подобный), текст — нейтральный Golos. */
+:root[data-fonts='g'] {
+  --font-heading: 'Montserrat', system-ui, sans-serif;
+  --font-dish: 'Montserrat', system-ui, sans-serif;
+  --font-nav: 'Golos Text', system-ui, sans-serif;
+  --font-body: 'Golos Text', system-ui, sans-serif;
+  --font-label: 'Golos Text', system-ui, sans-serif;
+  --font-price: 'Montserrat', system-ui, sans-serif;
 }
 
-/* D — Alegreya + Alegreya Sans, серифный контроль (ближе к Fraunces).
-   У Alegreya старостильные цифры — lining-nums обязателен (см. .dish-tag,
-   .dish-card__price в App.css). */
-:root[data-fonts='d'] {
-  --font-heading: 'Alegreya', Georgia, serif;
-  --font-dish: 'Alegreya', Georgia, serif;
-  --font-nav: 'Alegreya Sans', system-ui, sans-serif;
-  --font-body: 'Alegreya Sans', system-ui, sans-serif;
-  --font-label: 'Alegreya Sans SC', system-ui, sans-serif;
-  --font-price: 'Alegreya Sans', system-ui, sans-serif;
+/* H — Playfair Display + Onest: ресторанная классика, контрастная
+   антиква в разделах и названиях блюд. */
+:root[data-fonts='h'] {
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-dish: 'Playfair Display', Georgia, serif;
+}
+
+/* I — Rubik целиком: мягкие скруглённые формы, «домашняя» дружелюбность. */
+:root[data-fonts='i'] {
+  --font-heading: 'Rubik', system-ui, sans-serif;
+  --font-dish: 'Rubik', system-ui, sans-serif;
+  --font-nav: 'Rubik', system-ui, sans-serif;
+  --font-body: 'Rubik', system-ui, sans-serif;
+  --font-label: 'Rubik', system-ui, sans-serif;
+  --font-price: 'Rubik', system-ui, sans-serif;
   --w-dish: 500;
-  --w-nav: 500;
-  --w-label: 500;
-  --w-price: 700;
-  --tag-transform: none;
-  --tag-tracking: 0.06em;
-}
-
-/* E — Philosopher + Manrope: неровные заголовки на фоне аккуратной
-   геометрии, более «дорогой» контраст. */
-:root[data-fonts='e'] {
-  --font-heading: 'Philosopher', system-ui, sans-serif;
-  --font-dish: 'Philosopher', system-ui, sans-serif;
-  --font-nav: 'Manrope', system-ui, sans-serif;
-  --font-body: 'Manrope', system-ui, sans-serif;
-  --font-label: 'Manrope', system-ui, sans-serif;
-  --font-price: 'Manrope', system-ui, sans-serif;
-  --w-nav: 600;
-  --w-label: 700;
-  --w-price: 700;
-  --tag-tracking: 0.06em;
 }
 
 /* Тема по умолчанию — светлая (решение после теста). Тёмная включается
@@ -112,6 +98,111 @@
   --surface: #322f2f;
   --border: #3f3a38;
   --accent: #8ccfa0;
+  --on-accent: #262626;
+}
+
+/* Альтернативные палитры (дебаг-переключалка, data-palette на <html>).
+   Каждая задаёт светлый и тёмный вариант; тёмный селектор специфичнее
+   (0,3,0), поэтому порядок с дефолтным data-theme='dark' не важен.
+   Все пары text/bg, muted/surface, accent/bg, on-accent/accent —
+   не ниже WCAG AA (4.5:1). */
+
+/* Терракота — тренд 2026: глина/ржавчина на кремовом. */
+:root[data-palette='terracotta'],
+:root[data-palette='terracotta'] .pdf-sheet {
+  --text: #2b211d;
+  --text-muted: #6f615a;
+  --heading: #2b211d;
+  --bg: #f5ece3;
+  --surface: #fffaf5;
+  --border: #e6d3c3;
+  --accent: #a8492a;
+  --on-accent: #ffffff;
+}
+
+:root[data-palette='terracotta'][data-theme='dark'] {
+  --text: #f3e6da;
+  --text-muted: #bfaea1;
+  --heading: #f3e6da;
+  --bg: #1e1916;
+  --surface: #2a2320;
+  --border: #3d332d;
+  --accent: #e38b62;
+  --on-accent: #1e1916;
+}
+
+/* Шалфей — «органические» зелёные: шалфей + глубокий лесной акцент. */
+:root[data-palette='sage'],
+:root[data-palette='sage'] .pdf-sheet {
+  --text: #1f2a22;
+  --text-muted: #5d6a5f;
+  --heading: #1f2a22;
+  --bg: #eef0e6;
+  --surface: #f9faf4;
+  --border: #d6dccb;
+  --accent: #2f5d3a;
+  --on-accent: #ffffff;
+}
+
+:root[data-palette='sage'][data-theme='dark'] {
+  --text: #e7eee3;
+  --text-muted: #a9b6a6;
+  --heading: #e7eee3;
+  --bg: #161d18;
+  --surface: #1f2822;
+  --border: #313d34;
+  --accent: #a3cf8f;
+  --on-accent: #161d18;
+}
+
+/* Бэкстейдж — ч/б как логотип-плакат + один сигнальный цвет площадки:
+   днём красный «REC», ночью жёлтый гаффер-тейп. */
+:root[data-palette='backstage'],
+:root[data-palette='backstage'] .pdf-sheet {
+  --text: #141414;
+  --text-muted: #5c5c5c;
+  --heading: #141414;
+  --bg: #f3f1ec;
+  --surface: #ffffff;
+  --border: #dcd8cf;
+  --accent: #c62f1c;
+  --on-accent: #ffffff;
+}
+
+:root[data-palette='backstage'][data-theme='dark'] {
+  --text: #f3f1ec;
+  --text-muted: #a8a6a1;
+  --heading: #f3f1ec;
+  --bg: #111111;
+  --surface: #1c1c1c;
+  --border: #2e2e2e;
+  --accent: #ffd23f;
+  --on-accent: #111111;
+}
+
+/* Эспрессо — шоколадные коричневые + янтарь (самый частый акцент
+   у кейтеринг-сайтов). */
+:root[data-palette='espresso'],
+:root[data-palette='espresso'] .pdf-sheet {
+  --text: #2a1d16;
+  --text-muted: #6d5a4d;
+  --heading: #2a1d16;
+  --bg: #f4ede4;
+  --surface: #fdf9f3;
+  --border: #e3d5c4;
+  --accent: #9a5b00;
+  --on-accent: #ffffff;
+}
+
+:root[data-palette='espresso'][data-theme='dark'] {
+  --text: #f2e6d8;
+  --text-muted: #bda997;
+  --heading: #f2e6d8;
+  --bg: #1b130f;
+  --surface: #261b16;
+  --border: #3a2c24;
+  --accent: #f0a93b;
+  --on-accent: #1b130f;
 }
 
 * {
@@ -132,6 +223,15 @@ html {
 
 body {
   margin: 0;
+}
+
+/* Выделение текста — явно токенами палитры: системный цвет выделения
+   (Firefox/Zen берут акцент macOS) мог совпадать с цветом текста, и
+   выделенное было не видно. Пара accent / on-accent проверена на AA
+   во всех палитрах и темах. */
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
 }
 
 /* Видимый фокус на всех интерактивных элементах — доступность. */
@@ -155,4 +255,17 @@ p {
 
 a {
   color: inherit;
+}
+
+/* Текст только для скринридеров (визуально скрыт, но читается). */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }

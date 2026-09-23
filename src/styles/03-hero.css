@@ -1,11 +1,14 @@
 /* Hero: двухпанельная композиция, media 880. ПОРЯДОК КАСКАДА: партиалы подключаются строго по номерам в src/App.css — переставлять нельзя (см. AGENTS.md и docs/REFACTOR_PLAN.md). */
 
 /* ─── Hero ───────────────────────────────────────────────────────
-   Двухпанельная композиция: слева текст + CTA, справа постер-логотип
-   на натуральной пропорции (1680×994) — без object-fit: cover,
-   который обрезал плакат (см. docs/PLAN.md). */
+   Двухпанельная композиция: слева текст + CTA + строка фактов,
+   справа коллаж реальных тарелок из меню (фото 900×900 с прозрачным
+   фоном) — продукт на первом экране вместо логотипа-плаката. */
 .hero {
-  padding: clamp(40px, 7vw, 88px) 20px 0;
+  /* Сверху меньше, чем раньше (было до 88px): колонки центрируются по
+     высокому коллажу, и к отступу добавлялось ещё ~25px — текст
+     «отрывался» от хедера. */
+  padding: clamp(24px, 3.5vw, 48px) 20px 0;
 }
 
 .hero__inner {
@@ -18,29 +21,99 @@
 }
 
 .hero__copy {
+  /* Контейнер для cqi в .hero__title — заголовок подгоняется под
+     ширину колонки текста. */
+  container-type: inline-size;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 16px;
 }
 
+/* Надзаголовок-«eyebrow»: без плашки, короткая акцентная черта слева,
+   меняющееся окончание — акцентом и жирнее. */
 .hero__kicker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   font-family: var(--font-label);
-  font-weight: var(--w-label);
-  font-size: 12px;
+  font-weight: 500;
+  font-size: 15px;
   text-transform: var(--tag-transform);
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.hero__kicker::before {
+  content: '';
+  flex: none;
+  width: 28px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.hero__kicker-word {
+  font-weight: 700;
   color: var(--accent);
-  padding: 6px 12px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
+}
+
+/* Ротация окончания (Hero.tsx, только десктоп): все варианты в одной
+   ячейке грида — ширина по самому длинному, соседний текст не
+   прыгает; активный въезжает снизу, прежний уходит вверх. */
+.hero__kicker-words {
+  display: inline-grid;
+  vertical-align: bottom;
+  overflow: hidden;
+}
+
+.hero__kicker-words .hero__kicker-word {
+  grid-area: 1 / 1;
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+.hero__kicker-words .hero__kicker-word--active {
+  opacity: 1;
+  transform: none;
+}
+
+/* Следующие за активным ждут снизу — въезд всегда снизу вверх. */
+.hero__kicker-word--active ~ .hero__kicker-word {
+  transform: translateY(100%);
 }
 
 .hero__title {
-  font-size: clamp(38px, 5.5vw, 64px);
+  /* Заголовок — ровно 2 строки (hero.titleLines) на любой ширине и в
+     любом шрифтовом варианте: базовый размер уменьшается, если самая
+     длинная строка («и райдер артистов.») не влезает в колонку.
+     --hero-title-em — её ширина в em с запасом ~5%, замерена для
+     каждого шрифта; поменяли текст заголовка или добавили шрифтовой
+     вариант — перемерить (e2e responsive.spec.ts проверяет 2 строки). */
+  --hero-title-em: 9.1;
+  font-size: min(clamp(34px, 5vw, 58px), 100cqi / var(--hero-title-em));
   line-height: 1.08;
-  text-wrap: balance;
+}
+
+:root[data-fonts='f'] .hero__title {
+  --hero-title-em: 13.2;
+}
+
+:root[data-fonts='g'] .hero__title {
+  --hero-title-em: 11;
+}
+
+:root[data-fonts='h'] .hero__title {
+  --hero-title-em: 9.8;
+}
+
+:root[data-fonts='i'] .hero__title {
+  --hero-title-em: 10.3;
+}
+
+.hero__title-line {
+  display: block;
 }
 
 .hero__subtitle {
@@ -57,40 +130,223 @@
   margin-top: 8px;
 }
 
+.hero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--font-nav);
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+/* Галочка-маркер акцентным цветом перед каждым фактом. */
+.hero__facts li::before {
+  content: '✓';
+  margin-right: 6px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 .hero__media {
   margin: 0;
   position: relative;
 }
 
-.hero__media img {
-  display: block;
-  width: 100%;
-  height: auto;
-  border-radius: 20px;
-  border: 1px solid var(--border);
-  box-shadow: 0 24px 48px -24px rgb(38 38 38 / 0.35);
+/* Квадратная сцена; тарелки разложены в процентах, поэтому коллаж
+   масштабируется целиком. Позиции/размеры — по номеру тарелки. */
+.hero__plates {
+  position: relative;
+  aspect-ratio: 1;
 }
 
-/* Плавающий бейдж поверх постера: агрегат по сетам из контента. */
+.hero__plate {
+  position: absolute;
+  aspect-ratio: 1;
+}
+
+/* Внутри слота фото лежат друг на друге: при подмене старое
+   растворяется поверх проявляющегося нового. */
+.hero__plate-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  /* drop-shadow повторяет круглый контур тарелки (box-shadow был бы
+     квадратным — фото с прозрачным фоном). */
+  filter: drop-shadow(0 18px 22px rgb(38 38 38 / 0.28));
+}
+
+.hero__plate--1 {
+  z-index: 2;
+  width: 60%;
+  left: 20%;
+  top: 22%;
+}
+
+.hero__plate--2 {
+  z-index: 1;
+  width: 42%;
+  left: 0;
+  top: 0;
+  rotate: -8deg;
+}
+
+.hero__plate--3 {
+  z-index: 1;
+  width: 40%;
+  right: 0;
+  top: 4%;
+  rotate: 10deg;
+}
+
+.hero__plate--4 {
+  z-index: 3;
+  width: 34%;
+  right: 2%;
+  bottom: 2%;
+  rotate: -6deg;
+}
+
+/* Появление: тарелки «ставятся на стол» по очереди. Только при
+   разрешённой анимации — prefers-reduced-motion видит сразу финал. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__plate {
+    animation: hero-plate-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+
+  .hero__plate--2 {
+    animation-delay: 0.08s;
+  }
+
+  .hero__plate--3 {
+    animation-delay: 0.16s;
+  }
+
+  .hero__plate--4 {
+    animation-delay: 0.24s;
+  }
+}
+
+@keyframes hero-plate-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+  }
+}
+
+/* Кроссфейд подмены (только при ротации — она сама выключена при
+   prefers-reduced-motion). Длиннее, чем появление при загрузке:
+   смена должна читаться как спокойная, а не как мигание. */
+.hero__plate-img--entering {
+  animation: hero-plate-swap-in 1.6s ease-in-out both;
+}
+
+.hero__plate-img--leaving {
+  animation: hero-plate-swap-out 1.6s ease-in-out both;
+}
+
+@keyframes hero-plate-swap-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) rotate(-6deg);
+  }
+}
+
+@keyframes hero-plate-swap-out {
+  to {
+    opacity: 0;
+    transform: scale(1.04) rotate(6deg);
+  }
+}
+
+/* Плавающий бейдж-ссылка к сетам в свободном углу коллажа:
+   второстепенный CTA — акцентная обводка и цена, стрелка; при
+   наведении заливается акцентом. */
 .hero__badge {
   position: absolute;
-  left: 16px;
-  bottom: 16px;
-  padding: 8px 14px;
+  z-index: 4;
+  left: 2%;
+  bottom: 10%;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
   font-family: var(--font-nav);
   font-weight: var(--w-nav);
-  font-size: 13px;
+  font-size: 14px;
   font-variant-numeric: lining-nums;
   color: var(--text);
+  text-decoration: none;
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1.5px solid var(--accent);
   border-radius: 999px;
-  box-shadow: 0 8px 20px -10px rgb(38 38 38 / 0.4);
+  box-shadow: 0 10px 24px -10px rgb(38 38 38 / 0.45);
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+}
+
+.hero__badge-price {
+  font-weight: 700;
+  color: var(--accent);
+  transition: color 0.15s ease;
+}
+
+.hero__badge-arrow {
+  margin-left: 4px;
+  font-weight: 700;
+  color: var(--accent);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.hero__badge:hover {
+  color: var(--on-accent);
+  background: var(--accent);
+  transform: translateY(-1px);
+}
+
+.hero__badge:hover .hero__badge-price,
+.hero__badge:hover .hero__badge-arrow {
+  color: var(--on-accent);
+}
+
+.hero__badge:hover .hero__badge-arrow {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__badge,
+  .hero__badge:hover,
+  .hero__badge:hover .hero__badge-arrow {
+    transform: none;
+    transition: none;
+  }
 }
 
 @media (max-width: 880px) {
   .hero__inner {
     grid-template-columns: 1fr;
+  }
+
+  /* Уплотнение, чтобы «Кормим …» (самый длинный вариант) влезал в
+     одну строку вплоть до 320px. */
+  .hero__kicker {
+    gap: 10px;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .hero__kicker::before {
+    width: 18px;
+  }
+
+  /* В одну колонку коллаж идёт под текстом — ограничиваем, чтобы не
+     растягивался на всю ширину планшета. */
+  .hero__media {
+    width: 100%;
+    max-width: 440px;
+    justify-self: center;
   }
 
   /* Одна колонка почти на всю ширину экрана — равная доля в строке
@@ -100,9 +356,47 @@
   .hero__actions {
     flex-direction: column;
     align-items: stretch;
+    /* .hero__copy выравнивает детей по левому краю (flex-start) — без
+       stretch колонка кнопок сжималась до ширины текста. */
+    align-self: stretch;
+    max-width: 420px;
   }
 
   .hero__actions .button {
     flex: none;
+  }
+
+  /* Одно главное действие: WhatsApp на мобильном — не вторая такая же
+     крупная кнопка, а текстовая ссылка под «Выбрать сет». Экономит
+     высоту — коллаж ближе к первому экрану. */
+  .hero__actions {
+    gap: 4px;
+  }
+
+  .hero__actions .button--ghost {
+    padding: 10px;
+    background: none;
+    border-color: transparent;
+    color: var(--accent);
+    font-size: 15px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .hero__actions .button--ghost:hover {
+    border-color: transparent;
+  }
+
+  /* Меньше воздуха между текстом и коллажем (грид в одну колонку). */
+  .hero__inner {
+    gap: 12px;
+  }
+}
+
+/* Самые узкие экраны (320px): без черты — иначе надзаголовок
+   переносится на лишнюю строку. Заголовок ужимается сам (cqi). */
+@media (max-width: 359px) {
+  .hero__kicker::before {
+    display: none;
   }
 }

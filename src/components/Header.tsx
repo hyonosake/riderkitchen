@@ -24,6 +24,12 @@ export function Header({
         </a>
         <nav className={`header__nav${isNavOpen ? ' header__nav--open' : ''}`}>
           <ul>
+            {/* Сеты первыми — в том же порядке, что и разделы на странице. */}
+            <li>
+              <a href="#sets" onClick={() => setIsNavOpen(false)}>
+                Сеты
+              </a>
+            </li>
             {categories.map((category) => (
               <li key={category.id}>
                 <a href={`#${category.id}`} onClick={() => setIsNavOpen(false)}>
@@ -31,11 +37,6 @@ export function Header({
                 </a>
               </li>
             ))}
-            <li>
-              <a href="#sets" onClick={() => setIsNavOpen(false)}>
-                Сеты
-              </a>
-            </li>
           </ul>
         </nav>
         <a className="header__phone" href={contacts.phoneHref}>

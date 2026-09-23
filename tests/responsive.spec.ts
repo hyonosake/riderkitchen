@@ -49,6 +49,24 @@ test.describe('главная страница на всех вьюпортах'
     expect(consoleErrors).toEqual([])
   })
 
+  // Заголовок hero — ровно 2 строки (hero.titleLines) в каждом
+  // шрифтовом варианте: размер подгоняется в 03-hero.css через
+  // --hero-title-em. Варианты — src/content/debugVariants.ts.
+  for (const fonts of [null, 'f', 'g', 'h', 'i']) {
+    test(`заголовок hero в 2 строки (шрифты ${fonts ?? 'B'})`, async ({ page }) => {
+      await page.addInitScript((id) => {
+        if (id) localStorage.setItem('rk-fonts', id)
+      }, fonts)
+      await page.goto('/')
+      await page.evaluate(() => document.fonts.ready)
+      const lines = await page.locator('.hero__title').evaluate((title) => {
+        const lineHeight = parseFloat(getComputedStyle(title).lineHeight)
+        return Math.round(title.getBoundingClientRect().height / lineHeight)
+      })
+      expect(lines).toBe(2)
+    })
+  }
+
   test('фото карточек загружаются (naturalWidth > 0)', async ({ page }) => {
     await page.goto('/')
 
@@ -71,13 +89,17 @@ test.describe('главная страница на всех вьюпортах'
         .toBeGreaterThan(0)
     }
 
-    // Постер hero — отдельный элемент на натуральной пропорции
-    // (не object-fit: cover, см. docs/PLAN.md).
-    const heroImage = page.locator('.hero__media img')
+    // Коллаж hero — реальные фото блюд, все загружаются.
+    const heroPlates = page.locator('.hero__plate-img')
+    await expect(heroPlates).toHaveCount(4)
     await expect
-      .poll(async () => heroImage.evaluate((el) => (el as HTMLImageElement).naturalWidth), {
-        timeout: 10_000,
-      })
+      .poll(
+        async () =>
+          heroPlates.evaluateAll((els) =>
+            Math.min(...els.map((el) => (el as HTMLImageElement).naturalWidth)),
+          ),
+        { timeout: 10_000 },
+      )
       .toBeGreaterThan(0)
   })
 })
@@ -124,6 +146,26 @@ test.describe('корзина-drawer на всех вьюпортах', () => {
 
     expect(pageErrors).toEqual([])
     expect(consoleErrors).toEqual([])
+  })
+
+  // Нижняя панель корзины (CartBar.tsx) — только на ≤720px, где у
+  // кнопки корзины в хедере нет суммы; на планшете/десктопе её нет.
+  test('нижняя панель корзины: мобильные — есть и открывает drawer', async ({ page }) => {
+    await page.goto('/')
+    const bar = page.locator('.cart-bar')
+    await expect(bar).toHaveCount(0)
+
+    await page.getByRole('button', { name: /Добавить «.+» в заказ/ }).first().click()
+    const isMobile = (page.viewportSize()?.width ?? 0) <= 720
+    if (!isMobile) {
+      await expect(bar).toBeHidden()
+      return
+    }
+
+    await expect(bar).toBeVisible()
+    await expect(bar).toContainText('1 позиция')
+    await bar.getByRole('button').click()
+    await expect(page.locator('.cart-drawer')).toBeVisible()
   })
 
   test('закрытие кликом по подложке', async ({ page }) => {

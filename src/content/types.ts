@@ -23,6 +23,7 @@ export interface MenuSet {
   // Сумма оценок калорийности позиций сета.
   calories?: number
   items: string[]
+  tags?: DishTag[]
   image?: string
 }
 
@@ -37,6 +38,7 @@ export interface CartItem {
   description: string
   price: number
   calories?: number
+  tags?: DishTag[]
   qty: number
   image?: string
 }

@@ -37,6 +37,3 @@
 
 /* 8. Корзина: overlay + drawer + позиции */
 @import './styles/08-cart.css';
-
-/* 9. PDF-лист («Сохранить в PDF») */
-@import './styles/09-pdf.css';

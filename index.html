@@ -4,24 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rider Kitchen</title>
+    <!-- Иконка вкладки «RK» (public/favicon.svg); PNG 180×180 — для
+         «На экран Домой» в iOS, отрендерен из того же SVG. -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script>
-      // Раннее применение сохранённого шрифтового варианта (до монтирования
-      // React), чтобы при перезагрузке не мигала дефолтная пара.
-      // Вариант B зашит в :root как дефолт, применяем только a/c/d/e.
+      // Раннее применение сохранённых дебаг-вариантов (до монтирования
+      // React), чтобы при перезагрузке не мигали дефолтные шрифты/цвета.
+      // Списки синхронны с src/content/debugVariants.ts (дефолт — без атрибута).
       try {
-        var savedFonts = localStorage.getItem('rk-fonts')
-        if (savedFonts && ['a', 'c', 'd', 'e'].indexOf(savedFonts) !== -1) {
-          document.documentElement.setAttribute('data-fonts', savedFonts)
-        }
+        var debugVariants = [
+          ['rk-fonts', 'data-fonts', ['f', 'g', 'h', 'i']],
+          ['rk-palette', 'data-palette', ['terracotta', 'sage', 'backstage', 'espresso']],
+        ]
+        debugVariants.forEach(function (entry) {
+          var saved = localStorage.getItem(entry[0])
+          if (saved && entry[2].indexOf(saved) !== -1) {
+            document.documentElement.setAttribute(entry[1], saved)
+          }
+        })
       } catch (e) {}
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <!-- Тестовая подборка шрифтов (FontDebugToggle): дефолтная пара
-         Fuzzy Bubbles + Nunito плюс кандидаты вариантов A–E.
-         После выбора финальной пары лишние семейства убрать. -->
+    <!-- Дефолтная пара B (Philosopher + Onest) плюс кандидаты F–I
+         дебаг-переключалки. После выбора финальной пары лишние убрать. -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,500&family=Alegreya+Sans+SC:wght@500&family=Alegreya+Sans:wght@400;500;700&family=Fuzzy+Bubbles:wght@400;700&family=Manrope:wght@400;600;700&family=Nunito:wght@400;600;700;800&family=Onest:wght@400;500;600;700&family=Philosopher:wght@400;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=Montserrat:wght@500;600;700;800&family=Onest:wght@300;400;500;600;700&family=Philosopher:wght@400;700&family=Playfair+Display:wght@500;600;700&family=Rubik:wght@300;400;500;600;700&family=Unbounded:wght@500;600;700&display=swap"
       rel="stylesheet"
     />
   </head>

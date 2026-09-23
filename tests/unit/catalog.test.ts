@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { menu, sets } from '../../src/content/menu'
+import { hero } from '../../src/content/hero'
 import { DISH_BY_KEY } from '../../src/lib/catalog'
 
 // Справочник — чистая функция над реальным контентом, поэтому проверяем
@@ -56,5 +57,15 @@ describe('DISH_BY_KEY: полнота справочника', () => {
     expect(DISH_BY_KEY.get(`breakfast:${first.name}`)?.price).toBe(first.price)
 
     expect(DISH_BY_KEY.get(`sets:${sets[0].name}`)?.sectionTitle).toBe('Сеты')
+  })
+})
+
+// Коллаж hero ссылается на блюда по ключу корзины: опечатка в ключе
+// или блюдо без фото молча выкинули бы тарелку из коллажа.
+describe('hero.plates / hero.platePool', () => {
+  it('каждый ключ находится в справочнике и у блюда есть фото', () => {
+    for (const key of [...hero.plates, ...hero.platePool]) {
+      expect(DISH_BY_KEY.get(key)?.image, `ключ «${key}»`).toBeTruthy()
+    }
   })
 })
