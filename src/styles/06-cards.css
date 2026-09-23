@@ -253,6 +253,41 @@
   }
 }
 
+/* Дебаг-режим «Карусель» (DebugPanel → Мобильная раскладка меню,
+   [data-mobile-layout='carousel'] на <html>): на мобильных и небольших
+   экранах сетка карточек каждой категории (меню и сеты — общий класс
+   .menu-section__grid) превращается в горизонтальную ленту со
+   scroll-snap вместо грид-колонок. Только для теста варианта — атрибут
+   выключен по умолчанию, обычная раскладка не затронута. Селектор с
+   атрибутом специфичнее безусловных правил и правила 520px выше, так
+   что порядок в каскаде здесь не критичен, но блок всё равно стоит
+   последним, чтобы не путать с обычными медиа-переопределениями. */
+@media (max-width: 720px) {
+  html[data-mobile-layout='carousel'] .menu-section__grid {
+    display: flex;
+    grid-template-columns: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 20px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    margin: 0 -20px;
+    padding: 0 20px 10px;
+  }
+
+  html[data-mobile-layout='carousel'] .menu-section__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  html[data-mobile-layout='carousel'] .dish-card,
+  html[data-mobile-layout='carousel'] .set-card {
+    flex: 0 0 auto;
+    width: min(76vw, 300px);
+    scroll-snap-align: start;
+  }
+}
+
 .dish-card__tags {
   display: flex;
   gap: 6px;

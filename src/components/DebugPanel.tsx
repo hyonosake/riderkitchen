@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { ThemeDebugToggle } from './ThemeDebugToggle'
 import { DebugVariantToggle } from './DebugVariantToggle'
-import { fontVariants, paletteVariants } from '../content/debugVariants'
+import { fontVariants, paletteVariants, mobileLayoutVariants } from '../content/debugVariants'
 
 // Дебаг-инструменты (тема, палитры, шрифты) спрятаны за кнопкой-жучком —
 // как виджет «сообщить о баге»: не мешают обычному просмотру сайта,
@@ -25,6 +25,12 @@ export function DebugPanel() {
             attribute="data-fonts"
             storageKey="rk-fonts"
             variants={fontVariants}
+          />
+          <DebugVariantToggle
+            label="Мобильная раскладка меню"
+            attribute="data-mobile-layout"
+            storageKey="rk-mobile-layout"
+            variants={mobileLayoutVariants}
           />
         </div>
       )}

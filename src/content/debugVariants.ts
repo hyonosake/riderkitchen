@@ -19,6 +19,15 @@ export const fontVariants: readonly DebugVariant[] = [
   { id: 'i', label: 'I', hint: 'I: Rubik целиком — мягкие скруглённые формы, дружелюбно.' },
 ]
 
+export const mobileLayoutVariants: readonly DebugVariant[] = [
+  { id: null, label: 'Список', hint: 'Список (дефолт): карточки блюд в сетке 2 колонки, как сейчас.' },
+  {
+    id: 'carousel',
+    label: 'Карусель',
+    hint: 'Карусель: на мобильных и небольших экранах (≤720px) карточки каждой категории — горизонтальная лента со свайпом вместо сетки.',
+  },
+]
+
 export const paletteVariants: readonly DebugVariant[] = [
   {
     id: null,
