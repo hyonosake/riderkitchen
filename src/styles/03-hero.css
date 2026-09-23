@@ -91,13 +91,13 @@
      --hero-title-em — её ширина в em с запасом ~5%, замерена для
      каждого шрифта; поменяли текст заголовка или добавили шрифтовой
      вариант — перемерить (e2e responsive.spec.ts проверяет 2 строки). */
-  --hero-title-em: 9.1;
+  --hero-title-em: 13.2;
   font-size: min(clamp(34px, 5vw, 58px), 100cqi / var(--hero-title-em));
   line-height: 1.08;
 }
 
-:root[data-fonts='f'] .hero__title {
-  --hero-title-em: 13.2;
+:root[data-fonts='b'] .hero__title {
+  --hero-title-em: 9.1;
 }
 
 :root[data-fonts='g'] .hero__title {

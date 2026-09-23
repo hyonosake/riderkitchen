@@ -4,6 +4,9 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Сайт хостится по саброуту https://shu.sentinam.io/riderkitchen/ —
+  // без base сборка ссылалась бы на ассеты от корня домена.
+  base: '/riderkitchen/',
   plugins: [react()],
   // Юнит-тесты (vitest): jsdom глобально — хук- и компонентные тесты
   // работают без docblock-магии; чистые функции от этого не страдают.

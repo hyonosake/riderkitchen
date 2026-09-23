@@ -7,11 +7,9 @@ import { SetsSection } from './components/SetsSection'
 import { Footer } from './components/Footer'
 import { CartDrawer } from './components/CartDrawer'
 import { CartBar } from './components/CartBar'
-import { ThemeDebugToggle } from './components/ThemeDebugToggle'
-import { DebugVariantToggle } from './components/DebugVariantToggle'
+import { DebugPanel } from './components/DebugPanel'
 import { useCart } from './hooks/useCart'
 import { menu, sets } from './content/menu'
-import { fontVariants, paletteVariants } from './content/debugVariants'
 
 function App() {
   const { cart, handleQtyChange, clear, cartItems, cartTotal, cartCount } = useCart()
@@ -19,23 +17,7 @@ function App() {
 
   return (
     <>
-      {/* Временные дебаг-инструменты (тема, палитры, шрифты) —
-          убрать перед презентацией владельцу. */}
-      <div className="debug-toolbar">
-        <ThemeDebugToggle />
-        <DebugVariantToggle
-          label="Цветовые палитры"
-          attribute="data-palette"
-          storageKey="rk-palette"
-          variants={paletteVariants}
-        />
-        <DebugVariantToggle
-          label="Шрифтовые варианты"
-          attribute="data-fonts"
-          storageKey="rk-fonts"
-          variants={fontVariants}
-        />
-      </div>
+      <DebugPanel />
       <Header
         categories={menu}
         cartCount={cartCount}

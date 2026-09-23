@@ -12,8 +12,8 @@ export type DebugVariant = {
 }
 
 export const fontVariants: readonly DebugVariant[] = [
-  { id: null, label: 'B', hint: 'B (дефолт): Philosopher в разделах, Onest в блюдах и тексте.' },
-  { id: 'f', label: 'F', hint: 'F: Unbounded + Onest — широкий «афишный» гротеск, как буквы логотипа.' },
+  { id: null, label: 'F', hint: 'F (дефолт): Unbounded + Onest — широкий «афишный» гротеск, как буквы логотипа.' },
+  { id: 'b', label: 'B', hint: 'B (прежний дефолт): Philosopher в разделах, Onest в блюдах и тексте.' },
   { id: 'g', label: 'G', hint: 'G: Montserrat + Golos Text — геометрия, ближайшая к логотипу.' },
   { id: 'h', label: 'H', hint: 'H: Playfair Display + Onest — ресторанная классика, антиква.' },
   { id: 'i', label: 'I', hint: 'I: Rubik целиком — мягкие скруглённые формы, дружелюбно.' },
@@ -22,15 +22,15 @@ export const fontVariants: readonly DebugVariant[] = [
 export const paletteVariants: readonly DebugVariant[] = [
   {
     id: null,
-    label: 'Персик',
-    hint: 'Текущая: персиковый #FFE8DB + травяной зелёный.',
-    swatch: ['#ffe8db', '#3a7d44'],
+    label: 'Терракота',
+    hint: 'Терракота (дефолт): крем + ржавчина — тёплый тренд 2026.',
+    swatch: ['#f5ece3', '#a8492a'],
   },
   {
-    id: 'terracotta',
-    label: 'Терракота',
-    hint: 'Терракота: крем + ржавчина — тёплый тренд 2026.',
-    swatch: ['#f5ece3', '#a8492a'],
+    id: 'peach',
+    label: 'Персик',
+    hint: 'Персик (прежний дефолт): персиковый #FFE8DB + травяной зелёный.',
+    swatch: ['#ffe8db', '#3a7d44'],
   },
   {
     id: 'sage',

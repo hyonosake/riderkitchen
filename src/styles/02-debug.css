@@ -1,10 +1,11 @@
 /* Дебаг-панель и тумблеры (App.tsx, ThemeDebugToggle.tsx, DebugVariantToggle.tsx). ПОРЯДОК КАСКАДА: партиалы подключаются строго по номерам в src/App.css — переставлять нельзя (см. AGENTS.md и docs/REFACTOR_PLAN.md). */
 
-/* Дебаг-панель в правом нижнем углу: тумблер темы
+/* Дебаг-виджет в правом нижнем углу (DebugPanel.tsx): круглая кнопка-
+   жучок, по клику раскрывающая панель — тумблер темы
    (ThemeDebugToggle.tsx), переключалки палитр и шрифтов
-   (DebugVariantToggle.tsx). Временные инструменты для теста — убрать
-   перед презентацией владельцу. */
-.debug-toolbar {
+   (DebugVariantToggle.tsx). Спрятана по умолчанию, не мешает обычному
+   просмотру сайта. */
+.debug-panel {
   position: fixed;
   right: 12px;
   bottom: 12px;
@@ -12,7 +13,35 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
+  gap: 8px;
+}
+
+.debug-panel__trigger {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  box-shadow: 0 4px 12px -4px rgb(0 0 0 / 0.25);
+  cursor: pointer;
+}
+
+.debug-toolbar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 6px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.35);
 }
 
 .debug-toolbar__row {
