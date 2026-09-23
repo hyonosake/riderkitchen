@@ -11,7 +11,8 @@
     "test:unit": "vitest run",
     "test:watch": "vitest",
     "test": "npm run test:unit && npm run test:e2e",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "deploy": "docker-compose build && (docker rm -f riderkitchen || true) && docker-compose up -d"
   },
   "dependencies": {
     "jspdf": "^4.2.1",
