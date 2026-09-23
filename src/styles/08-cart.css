@@ -136,9 +136,24 @@
   gap: 12px;
 }
 
+.cart-item__name-group {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
 .cart-item__name {
   font-weight: 600;
   font-size: 14px;
+}
+
+.cart-item__qty {
+  flex-shrink: 0;
+  font-family: var(--font-label);
+  font-size: 11px;
+  color: var(--text-muted);
+  white-space: nowrap;
 }
 
 .cart-item__sum {
@@ -146,6 +161,13 @@
   font-variant-numeric: lining-nums;
   white-space: nowrap;
   color: var(--accent);
+}
+
+.cart-item__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 /* Внутри корзины степпер компактнее: сумма позиции уже показана
@@ -158,6 +180,29 @@
   min-width: 0;
   padding: 0 4px;
   font-size: 15px;
+}
+
+/* Кнопка удаления позиции целиком (вместо докликивания «−» до нуля) —
+   тот же стиль ghost-круга, что у крестика закрытия drawer'а. */
+.cart-item__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.cart-item__remove:hover {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .cart-drawer__foot {
@@ -180,7 +225,7 @@
   color: var(--accent);
 }
 
-.cart-drawer__phone-label {
+.cart-drawer__label {
   font-family: var(--font-label);
   font-weight: var(--w-label);
   font-size: 11px;
@@ -189,13 +234,18 @@
   color: var(--text-muted);
 }
 
-.cart-drawer__phone {
+.cart-drawer__input {
   padding: 11px 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--bg);
   font: inherit;
   font-variant-numeric: lining-nums;
+  color: var(--text);
+}
+
+/* Safari/Chrome красят текст даты в системный синий — приводим к теме. */
+.cart-drawer__input[type='date']::-webkit-datetime-edit {
   color: var(--text);
 }
 

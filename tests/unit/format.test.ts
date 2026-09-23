@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { formatPhoneRu, formatPrice, isPhoneRuComplete, pluralizeRu } from '../../src/lib/format'
+import {
+    formatDateRu,
+    formatPhoneRu,
+    formatPhoneRuOnChange,
+    formatPrice,
+    isPhoneRuComplete,
+    pluralizeRu,
+} from '../../src/lib/format'
 
 describe('formatPrice', () => {
     it('добавляет знак ₽ к числу', () => {
@@ -54,6 +61,37 @@ describe('formatPhoneRu', () => {
         ['9269101010999', '+7 (926) 910-10-10'], // лишние цифры обрезаются (11 максимум)
     ])('«%s» → «%s»', (raw, expected) => {
         expect(formatPhoneRu(raw)).toBe(expected)
+    })
+})
+
+describe('formatPhoneRuOnChange', () => {
+    // Баг: Backspace на границе маски (сразу после «)»/«-»/пробела) стирал
+    // только символ маски — formatPhoneRu тут же рисовал его обратно, и
+    // поле визуально не реагировало на нажатие (см. tests/cart.spec.ts).
+    it.each([
+        // ['было', 'после нажатия Backspace в конце', 'ожидаемый результат']
+        ['+7 (916)', '+7 (916', '+7 (91'], // стёрли «)» — маска вернула бы её без изменений
+        ['+7 (916', '+7 (91', '+7 (91'], // обычное удаление цифры — работает как обычно
+        ['+7 (926) 910-10-10', '+7 (926) 910-10-1', '+7 (926) 910-10-1'],
+        ['+7 (926) 910-10', '+7 (926) 910-1', '+7 (926) 910-1'],
+        ['+7', '+', '+7'], // «+7» неудаляемо (formatPhoneRu не отдаёт короче)
+    ])('«%s» → backspace → «%s» даёт «%s»', (prev, raw, expected) => {
+        expect(formatPhoneRuOnChange(raw, prev)).toBe(expected)
+    })
+
+    it('обычный ввод (не удаление) работает как formatPhoneRu', () => {
+        expect(formatPhoneRuOnChange('+7 (9', '+7 (')).toBe(formatPhoneRu('+7 (9'))
+    })
+})
+
+describe('formatDateRu', () => {
+    it.each([
+        ['2026-09-25', '25.09.2026'],
+        ['2026-01-05', '05.01.2026'],
+        ['', ''],
+        ['не дата', 'не дата'],
+    ])('«%s» → «%s»', (iso, expected) => {
+        expect(formatDateRu(iso)).toBe(expected)
     })
 })
 

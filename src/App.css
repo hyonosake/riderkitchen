@@ -26,7 +26,7 @@
 /* 4. Кнопки .button--primary/--ghost */
 @import './styles/04-buttons.css';
 
-/* 5. main и .menu-section*, media 1800 */
+/* 5. main и .menu-section*, media 1280/1800 */
 @import './styles/05-menu.css';
 
 /* 6. Карточки: .dish-card*, .set-card*, .price-pill*, tags, media 520/360 */

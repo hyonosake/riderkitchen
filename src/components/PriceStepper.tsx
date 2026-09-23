@@ -57,10 +57,10 @@ export function PriceStepper({ name, price, qty, onQtyChange }: QtyControlProps)
 
   return (
     <div className="price-stepper">
-      <QtyStepper name={name} price={price} qty={qty} onQtyChange={onQtyChange} />
       <span className="price-pill__count" aria-live="polite">
-        × {qty}
+        {qty} ×
       </span>
+      <QtyStepper name={name} price={price} qty={qty} onQtyChange={onQtyChange} />
     </div>
   )
 }

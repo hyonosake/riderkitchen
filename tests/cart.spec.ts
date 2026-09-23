@@ -8,7 +8,7 @@ import { collectRuntimeErrors } from './support'
 //
 // Поведение сверено с исходниками:
 // - PriceStepper.tsx: пилюля цены (aria-label «Добавить «X» в заказ —
-//   N ₽») кликом превращается в степпер «− цена +» с «× N» сбоку;
+//   N ₽») кликом превращается в степпер «− цена +» с «N ×» слева;
 // - Header.tsx: кнопка .header__cart, сумма .header__cart-total,
 //   бейдж .header__cart-badge появляется при count > 0;
 // - CartDrawer.tsx: «Сформировать заказ» — <a>, href подставляется
@@ -52,13 +52,13 @@ test.describe('степперы на карточках и хедер', () => {
 
     await pill.click()
     const count = card.locator('.price-pill__count')
-    await expect(count).toHaveText('× 1')
+    await expect(count).toHaveText('1 ×')
     await expect(page.locator('.header__cart-badge')).toHaveText('1')
     await expect(page.locator('.header__cart-total')).toHaveText(`${price} ₽`)
 
     // Вторая порция — уже через «+» степпера.
     await card.getByRole('button', { name: 'Добавить порцию' }).click()
-    await expect(count).toHaveText('× 2')
+    await expect(count).toHaveText('2 ×')
     await expect(page.locator('.header__cart-badge')).toHaveText('2')
     await expect(page.locator('.header__cart-total')).toHaveText(`${price * 2} ₽`)
 
@@ -99,6 +99,45 @@ test.describe('drawer корзины', () => {
     await expect(item).toHaveCount(0)
     await expect(page.locator('.header__cart-badge')).toHaveCount(0)
     await expect(page.locator('.cart-drawer__empty')).toBeVisible()
+  })
+
+  test('кол-во порций показано в списке; кнопка удаления убирает позицию сразу', async ({ page }) => {
+    await page.goto('/')
+    const { name } = await firstDish(page)
+
+    const card = page.locator('.dish-card').filter({ hasText: name }).first()
+    await card.getByRole('button', { name: `Добавить «${name}» в заказ` }).click()
+    await card.getByRole('button', { name: 'Добавить порцию' }).click()
+    await openCart(page)
+
+    const item = page.locator('.cart-item').filter({ hasText: name })
+    await expect(item.locator('.cart-item__qty')).toHaveText('2 порции')
+
+    // Кнопка «Удалить» убирает позицию целиком, а не по одной порции.
+    await item.getByRole('button', { name: `Удалить «${name}» из корзины` }).click()
+    await expect(item).toHaveCount(0)
+    await expect(page.locator('.header__cart-badge')).toHaveCount(0)
+    await expect(page.locator('.cart-drawer__empty')).toBeVisible()
+  })
+})
+
+test.describe('маска телефона в корзине', () => {
+  test('Backspace на границе маски удаляет символ, а не застревает', async ({ page }) => {
+    await page.goto('/')
+    const { name } = await firstDish(page)
+    await page.getByRole('button', { name: `Добавить «${name}» в заказ` }).first().click()
+    await openCart(page)
+
+    const phone = page.locator('#cart-phone')
+    await phone.pressSequentially('9161234567')
+    await expect(phone).toHaveValue('+7 (916) 123-45-67')
+
+    // Раньше formatPhoneRu пересобирал маску из тех же цифр и «съедал»
+    // Backspace на границе «)»/«-»/пробела — поле застревало и дальше
+    // не стиралось. Полное посимвольное стирание должно доходить до
+    // неудаляемого «+7».
+    for (let i = 0; i < 20; i++) await phone.press('Backspace')
+    await expect(phone).toHaveValue('+7')
   })
 })
 

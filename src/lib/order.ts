@@ -1,12 +1,21 @@
 import { contacts } from '../content/menu'
 import type { CartItem } from '../content/types'
-import { formatPrice } from './format'
+import { formatDateRu, formatPrice } from './format'
 
-// Текст WhatsApp-заказа: заголовок, позиции с суммами, итог, телефон.
-// Формат строк — контракт e2e (tests/cart.spec.ts): «• <название> × N — N ₽».
-export function buildOrderText(items: CartItem[], total: number, phone: string): string {
+// Текст WhatsApp-заказа: заголовок, имя и дата (если заполнены),
+// позиции с суммами, итог, телефон. Формат строк позиций — контракт
+// e2e (tests/cart.spec.ts): «• <название> × N — N ₽».
+export function buildOrderText(
+    items: CartItem[],
+    total: number,
+    phone: string,
+    name = '',
+    date = '',
+): string {
     return [
         'Заказ Rider Kitchen:',
+        ...(name ? [`Имя: ${name}`] : []),
+        ...(date ? [`Дата: ${formatDateRu(date)}`] : []),
         ...items.map((item) => `• ${item.name} × ${item.qty} — ${formatPrice(item.price * item.qty)}`),
         `Итого: ${formatPrice(total)}`,
         `Телефон: ${phone}`,

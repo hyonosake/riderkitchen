@@ -2,6 +2,13 @@ export function formatPrice(price: number): string {
   return `${price} ₽`
 }
 
+// Дата заказа из <input type="date"> (ISO «YYYY-MM-DD») → «ДД.ММ.ГГГГ»
+// для текста заказа и PDF. Пустая/некорректная строка — как есть.
+export function formatDateRu(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso)
+  return match ? `${match[3]}.${match[2]}.${match[1]}` : iso
+}
+
 // Русские формы множественного числа: pluralizeRu(3, ['сет', 'сета', 'сетов'])
 // → 'сета'. Учитывает исключения 11–14.
 export function pluralizeRu(count: number, forms: readonly [string, string, string]): string {
@@ -38,4 +45,24 @@ export function formatPhoneRu(raw: string): string {
 // Телефон введён полностью (10 значащих цифр после +7)?
 export function isPhoneRuComplete(formatted: string): boolean {
   return formatted.replace(/\D/g, '').length === 11
+}
+
+// Обработчик onChange для маскированного поля: formatPhoneRu сам по
+// себе ломает Backspace на границе маски — когда курсор стоит сразу
+// после «)»/«-»/пробела, удаляется только этот символ маски, а
+// formatPhoneRu, пересобирая строку из цифр, тут же рисует его
+// обратно (набор цифр не изменился), и поле визуально не реагирует
+// на нажатие. Здесь сравниваем количество цифр до и после: если при
+// удалении символов цифр стало не меньше — значит, стёрли символ
+// маски вхолостую, и нужно убрать ещё и последнюю цифру.
+export function formatPhoneRuOnChange(raw: string, prev: string): string {
+  const isDeletion = raw.length < prev.length
+  let digits = raw.replace(/\D/g, '')
+  if (isDeletion) {
+    const prevDigits = prev.replace(/\D/g, '')
+    if (digits.length > 0 && digits.length >= prevDigits.length) {
+      digits = digits.slice(0, -1)
+    }
+  }
+  return formatPhoneRu(digits)
 }

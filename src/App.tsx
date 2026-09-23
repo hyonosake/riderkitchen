@@ -7,6 +7,7 @@ import { SetsSection } from './components/SetsSection'
 import { Footer } from './components/Footer'
 import { CartDrawer } from './components/CartDrawer'
 import { CartBar } from './components/CartBar'
+import { PhoneBubble } from './components/PhoneBubble'
 import { DebugPanel } from './components/DebugPanel'
 import { useCart } from './hooks/useCart'
 import { menu, sets } from './content/menu'
@@ -40,6 +41,7 @@ function App() {
         ))}
       </main>
       <Footer />
+      <PhoneBubble raised={cartCount > 0} />
       <CartBar count={cartCount} total={cartTotal} onOpen={() => setIsCartOpen(true)} />
       <CartDrawer
         items={cartItems}

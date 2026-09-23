@@ -62,6 +62,22 @@ describe('buildOrderText', () => {
       'Телефон: ',
     ])
   })
+
+  it('добавляет строки «Имя»/«Дата» (в формате ДД.ММ.ГГГГ), только если заполнены', () => {
+    const text = buildOrderText([{ ...omeletteItem, qty: 1 }], omelette.price, PHONE, 'Иван', '2026-09-25')
+    expect(text.split('\n')).toEqual([
+      'Заказ Rider Kitchen:',
+      'Имя: Иван',
+      'Дата: 25.09.2026',
+      `• ${omelette.name} × 1 — ${omelette.price} ₽`,
+      `Итого: ${omelette.price} ₽`,
+      `Телефон: ${PHONE}`,
+    ])
+
+    // Без имени/даты строки не появляются вовсе (не «Имя: »/«Дата: » пустые).
+    expect(buildOrderText([], 0, '')).not.toContain('Имя')
+    expect(buildOrderText([], 0, '')).not.toContain('Дата')
+  })
 })
 
 describe('buildSectionSummary', () => {

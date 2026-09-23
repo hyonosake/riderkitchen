@@ -1,7 +1,7 @@
 import type { jsPDF as JsPdf } from 'jspdf'
 import type { CartItem } from '../content/types'
 import { tagLabels } from '../content/tags'
-import { formatPrice } from './format'
+import { formatDateRu, formatPrice } from './format'
 import { buildSectionSummary } from './order'
 
 // Векторный PDF состава заказа: лист рисуется примитивами jsPDF —
@@ -192,7 +192,7 @@ async function photoToJpeg(src: string, background: Rgb): Promise<string | null>
 }
 
 export async function exportOrderPdf(
-  order: { items: CartItem[]; total: number; phone: string },
+  order: { items: CartItem[]; total: number; phone: string; name?: string; date?: string },
   fileName: string,
 ): Promise<void> {
   const { jsPDF } = await import('jspdf')
@@ -256,19 +256,28 @@ export async function exportOrderPdf(
 
   paintBackground()
 
-  // ─── Шапка: бренд + подпись слева, телефон справа, акцентная линия.
+  // ─── Шапка: бренд + подпись слева, имя/дата/телефон справа
+  // (построчно, сверху вниз), акцентная линия.
   font(role.brand, 17, colors.text)
   pdf.text('Rider Kitchen', left, y + 14)
   font(role.body, 10, colors.muted)
   pdf.text('Состав заказа', left, y + 30)
-  if (order.phone) {
+
+  const fields: Array<[string, string]> = [
+    ...(order.name ? [['Имя: ', order.name] as [string, string]] : []),
+    ...(order.date ? [['Дата: ', formatDateRu(order.date)] as [string, string]] : []),
+    ...(order.phone ? [['Телефон: ', order.phone] as [string, string]] : []),
+  ]
+  fields.forEach(([label, value], index) => {
+    const lineY = y + 14 + index * 14
     font(role.bodyBold, 10, colors.text)
-    pdf.text(order.phone, right, y + 30, { align: 'right' })
-    const phoneWidth = pdf.getTextWidth(order.phone)
+    pdf.text(value, right, lineY, { align: 'right' })
+    const valueWidth = pdf.getTextWidth(value)
     font(role.body, 10, colors.muted)
-    pdf.text('Телефон: ', right - phoneWidth, y + 30, { align: 'right' })
-  }
-  y += 42
+    pdf.text(label, right - valueWidth, lineY, { align: 'right' })
+  })
+
+  y += Math.max(42, 14 + fields.length * 14 + 12)
   pdf.setDrawColor(...colors.accent)
   pdf.setLineWidth(1.5)
   pdf.line(left, y, right, y)

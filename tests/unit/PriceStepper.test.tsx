@@ -46,7 +46,7 @@ describe('PriceStepper: qty > 0 — степпер с «× N»', () => {
 
         expect(screen.getByRole('button', { name: 'Добавить порцию' })).toBeTruthy()
         expect(screen.getByRole('button', { name: 'Убрать порцию' })).toBeTruthy()
-        expect(screen.getByText('× 2').getAttribute('aria-live')).toBe('polite')
+        expect(screen.getByText('2 ×').getAttribute('aria-live')).toBe('polite')
         expect(
             screen.queryByRole('button', { name: `Добавить «${NAME}» в заказ — ${formatPrice(PRICE)}` }),
         ).toBeNull()
@@ -90,7 +90,7 @@ describe('PriceStepper: qty > 0 — степпер с «× N»', () => {
 
         rerender(<PriceStepper name={NAME} price={PRICE} qty={3} onQtyChange={() => { }} />)
 
-        expect(screen.getByText('× 3')).toBeTruthy()
+        expect(screen.getByText('3 ×')).toBeTruthy()
     })
 })
 
