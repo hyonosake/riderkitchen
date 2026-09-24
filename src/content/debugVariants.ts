@@ -20,12 +20,12 @@ export const fontVariants: readonly DebugVariant[] = [
 ]
 
 export const mobileLayoutVariants: readonly DebugVariant[] = [
-  { id: null, label: 'Список', hint: 'Список (дефолт): карточки блюд в сетке 2 колонки, как сейчас.' },
   {
-    id: 'carousel',
+    id: null,
     label: 'Карусель',
-    hint: 'Карусель: на мобильных и небольших экранах (≤720px) карточки каждой категории — горизонтальная лента со свайпом вместо сетки.',
+    hint: 'Карусель (дефолт): на мобильных и небольших экранах (≤720px) карточки каждой категории — горизонтальная лента со свайпом вместо сетки (кроме Гарниров и Напитков — у них мало позиций).',
   },
+  { id: 'list', label: 'Список', hint: 'Список: карточки блюд в сетке 2 колонки вместо ленты.' },
 ]
 
 export const paletteVariants: readonly DebugVariant[] = [
