@@ -65,7 +65,7 @@ export function CartDrawer({
     if (isPdfBusy || items.length === 0) return
     setIsPdfBusy(true)
     try {
-      await exportOrderPdf({ items, total, phone, name, date }, 'rider-kitchen-order.pdf')
+      await exportOrderPdf({ items, total, name, date }, 'rider-kitchen-order.pdf')
     } finally {
       setIsPdfBusy(false)
     }

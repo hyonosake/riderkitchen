@@ -1,6 +1,7 @@
 import type { jsPDF as JsPdf } from 'jspdf'
 import type { CartItem } from '../content/types'
 import { tagLabels } from '../content/tags'
+import { contacts } from '../content/menu'
 import { formatDateRu, formatPrice } from './format'
 import { buildSectionSummary } from './order'
 
@@ -192,7 +193,7 @@ async function photoToJpeg(src: string, background: Rgb): Promise<string | null>
 }
 
 export async function exportOrderPdf(
-  order: { items: CartItem[]; total: number; phone: string; name?: string; date?: string },
+  order: { items: CartItem[]; total: number; name?: string; date?: string },
   fileName: string,
 ): Promise<void> {
   const { jsPDF } = await import('jspdf')
@@ -266,7 +267,7 @@ export async function exportOrderPdf(
   const fields: Array<[string, string]> = [
     ...(order.name ? [['Имя: ', order.name] as [string, string]] : []),
     ...(order.date ? [['Дата: ', formatDateRu(order.date)] as [string, string]] : []),
-    ...(order.phone ? [['Телефон: ', order.phone] as [string, string]] : []),
+    ['Телефон: ', contacts.phone],
   ]
   fields.forEach(([label, value], index) => {
     const lineY = y + 14 + index * 14
@@ -329,13 +330,8 @@ export async function exportOrderPdf(
     }
 
     const middle = y + rowHeight / 2
-    const hasKcal = item.calories != null
     font(role.body, 10.5, colors.text)
-    pdf.text(`× ${item.qty}`, qtyCenter, hasKcal ? middle - 1 : middle + 4, { align: 'center' })
-    if (hasKcal) {
-      font(role.body, 8, colors.muted)
-      pdf.text(`≈ ${(item.calories ?? 0) * item.qty} ккал`, qtyCenter, middle + 11, { align: 'center' })
-    }
+    pdf.text(`× ${item.qty}`, qtyCenter, middle + 4, { align: 'center' })
     font(role.price, 11.5, colors.accent)
     pdf.text(formatPrice(item.price * item.qty), sumRight, middle + 4, { align: 'right' })
 
@@ -366,10 +362,9 @@ export async function exportOrderPdf(
   }
 
   // ─── Итог: разбивка по разделам списком (тонким шрифтом) слева,
-  // калорийность под ней, «Итого» справа внизу блока.
+  // «Итого» справа внизу блока.
   const summary = buildSectionSummary(order.items)
-  const totalKcal = order.items.reduce((sum, item) => sum + (item.calories ?? 0) * item.qty, 0)
-  const summaryHeight = 16 + summary.length * 14 + (totalKcal > 0 ? 18 : 0)
+  const summaryHeight = 16 + summary.length * 14
   ensureSpace(summaryHeight + 10)
   y += 4
   pdf.setDrawColor(...colors.border)
@@ -385,11 +380,6 @@ export async function exportOrderPdf(
     pdf.text(String(qty), listRight, y, { align: 'right' })
     y += 14
   })
-  if (totalKcal > 0) {
-    y += 4
-    font(role.bodyLight, 9, colors.muted)
-    pdf.text(`≈ ${totalKcal} ккал`, left, y)
-  }
 
   const totalText = formatPrice(order.total)
   font(role.price, 18, colors.accent)
