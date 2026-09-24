@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CartItem } from '../content/types'
 import { formatPrice, formatPhoneRuOnChange, isPhoneRuComplete, pluralizeRu } from '../lib/format'
 import { buildOrderText, buildWhatsAppHref } from '../lib/order'
@@ -37,6 +37,25 @@ export function CartDrawer({
   const [phone, setPhone] = useState('')
   const [isPdfBusy, setIsPdfBusy] = useState(false)
   const phoneComplete = isPhoneRuComplete(phone)
+
+  // На мобильных overflow:hidden на body не блокирует скролл под
+  // открытой панелью (жест уходит на сайт под ней) — фиксируем body
+  // на текущей позиции и возвращаем скролл на место при закрытии.
+  useEffect(() => {
+    if (!open) return
+    const scrollY = window.scrollY
+    const { style } = document.body
+    const prev = { position: style.position, top: style.top, width: style.width }
+    style.position = 'fixed'
+    style.top = `-${scrollY}px`
+    style.width = '100%'
+    return () => {
+      style.position = prev.position
+      style.top = prev.top
+      style.width = prev.width
+      window.scrollTo(0, scrollY)
+    }
+  }, [open])
 
   const count = items.reduce((sum, item) => sum + item.qty, 0)
 
