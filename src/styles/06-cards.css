@@ -289,6 +289,25 @@
     width: min(76vw, 300px);
     scroll-snap-align: center;
   }
+
+  /* Гарниры и напитки — короткие списки (4 и 2 позиции), лента им не
+     нужна даже в дебаг-режиме «Карусель»: остаются обычной сеткой. */
+  html[data-mobile-layout='carousel'] #sides .menu-section__grid,
+  html[data-mobile-layout='carousel'] #drinks .menu-section__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    overflow-x: visible;
+    margin: 0;
+    padding: 0;
+    gap: 12px;
+  }
+
+  html[data-mobile-layout='carousel'] #sides .dish-card,
+  html[data-mobile-layout='carousel'] #drinks .dish-card {
+    flex: initial;
+    width: auto;
+    scroll-snap-align: none;
+  }
 }
 
 .dish-card__tags {

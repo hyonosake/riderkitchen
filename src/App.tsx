@@ -39,6 +39,10 @@ function App() {
             onQtyChange={handleQtyChange}
           />
         ))}
+        <p className="menu-section__note">
+          Другие позиции райдера артистов по питанию или бытового райдера обсуждаются
+          индивидуально.
+        </p>
       </main>
       <Footer />
       <PhoneBubble raised={cartCount > 0} />

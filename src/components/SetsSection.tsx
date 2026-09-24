@@ -63,10 +63,6 @@ export function SetsSection({
           </article>
         ))}
       </div>
-      <p className="menu-section__note">
-        Другие позиции райдера артистов по питанию или бытового райдера обсуждаются
-        индивидуально.
-      </p>
     </section>
   )
 }
