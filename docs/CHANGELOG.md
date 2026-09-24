@@ -4,6 +4,19 @@
 этапом 1 — первичный перенос контента). Детали и мотивация — в
 [`docs/PLAN.md`](PLAN.md), находки по оригиналу — в [`docs/BUGS.md`](BUGS.md).
 
+## SEO-метатеги и данные для краулеров (2026-09)
+
+- `index.html`: title/description, canonical, Open Graph + Twitter
+  Card (картинка — `hero.webp`, логотип-плакат «RIDER KITCHEN — FEED
+  YOUR TEAM», ранее оставленный без применения), theme-color, JSON-LD
+  `CateringService` (имя, телефон, Instagram).
+- `public/robots.txt`, `public/sitemap.xml` — заготовлены под прод-домен
+  `riderkitchen.ru`.
+- Canonical/OG/sitemap указывают на `riderkitchen.ru`, а не на текущий
+  сабраут стейджинга — это адрес, под которым сайт будет жить после
+  переезда. Стейджинг закрыт от индексации (`noindex` + `Disallow`),
+  снять при переезде на прод.
+
 ## Мобильная версия: сеты наверх, панель корзины (2026-09)
 
 - «Готовые сеты» — первым разделом после hero и первым пунктом

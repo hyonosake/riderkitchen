@@ -1,0 +1,8 @@
+# Стейджинг (shu.sentinam.io/riderkitchen/) — сайт ещё не заменил
+# старый WordPress на riderkitchen.ru, поэтому закрыт от индексации
+# (см. также noindex в index.html). При переезде на прод заменить
+# Disallow на Allow и раскомментировать Sitemap ниже.
+User-agent: *
+Disallow: /
+
+# Sitemap: https://riderkitchen.ru/sitemap.xml
