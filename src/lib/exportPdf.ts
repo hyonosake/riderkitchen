@@ -267,7 +267,7 @@ export async function exportOrderPdf(
   const fields: Array<[string, string]> = [
     ...(order.name ? [['Имя: ', order.name] as [string, string]] : []),
     ...(order.date ? [['Дата: ', formatDateRu(order.date)] as [string, string]] : []),
-    ['Телефон: ', contacts.phone],
+    ['Оформить заказ по телефону: ', contacts.phone],
   ]
   fields.forEach(([label, value], index) => {
     const lineY = y + 14 + index * 14
