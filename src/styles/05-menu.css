@@ -15,10 +15,13 @@ main {
   border-top: none;
 }
 
-/* Шапка раздела: номер — заголовок — счётчик позиций справа. */
+/* Шапка раздела: номер — заголовок — счётчик позиций справа.
+   align-items: center, а не baseline — иначе мелкий номер (13px)
+   садится на базовую линию крупного заголовка (26–36px) и визуально
+   съезжает вниз относительно него. */
 .menu-section__head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 14px;
   margin-bottom: 28px;
 }
