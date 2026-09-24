@@ -4,8 +4,14 @@ import { menu, sets } from '../../src/content/menu'
 import { useCart } from '../../src/hooks/useCart'
 
 // При globals: false авто-cleanup Testing Library не включён — снимаем
-// смонтированные renderHook-рендеры вручную между тестами.
-afterEach(cleanup)
+// смонтированные renderHook-рендеры вручную между тестами. localStorage
+// в jsdom переживает между тестами одного файла — useCart персистит в
+// него корзину (rk-cart), поэтому чистим и его, иначе следующий
+// renderHook() подхватывает состояние из предыдущего теста.
+afterEach(() => {
+    cleanup()
+    localStorage.clear()
+})
 
 // Хук восстанавливает позиции из DISH_BY_KEY (src/lib/catalog.ts), поэтому
 // проверяем его на реальном контенте: ключи и ожидаемые поля берём
