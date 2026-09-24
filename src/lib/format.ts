@@ -9,6 +9,45 @@ export function formatDateRu(iso: string): string {
   return match ? `${match[3]}.${match[2]}.${match[1]}` : iso
 }
 
+// Маска даты для ручного ввода: цифры → «ДД.ММ.ГГГГ» (8 цифр максимум).
+// Backspace на границе маски обрабатывается как в formatPhoneRuOnChange.
+export function formatDateRuOnChange(raw: string, prev: string): string {
+  const isDeletion = raw.length < prev.length
+  let digits = raw.replace(/\D/g, '')
+  if (isDeletion) {
+    const prevDigits = prev.replace(/\D/g, '')
+    if (digits.length > 0 && digits.length >= prevDigits.length) {
+      digits = digits.slice(0, -1)
+    }
+  }
+  digits = digits.slice(0, 8)
+
+  const day = digits.slice(0, 2)
+  const month = digits.slice(2, 4)
+  const year = digits.slice(4, 8)
+
+  let out = day
+  if (day.length === 2) out += '.'
+  out += month
+  if (month.length === 2) out += '.'
+  out += year
+  return out
+}
+
+// «ДД.ММ.ГГГГ» → ISO («YYYY-MM-DD»), только если дата реально
+// существует в календаре (отсекает 31.02 и т.п.). Иначе — ''.
+export function parseDateRuToIso(masked: string): string {
+  const match = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(masked)
+  if (!match) return ''
+  const [, dd, mm, yyyy] = match
+  const day = Number(dd)
+  const month = Number(mm)
+  const year = Number(yyyy)
+  const date = new Date(year, month - 1, day)
+  const isRealDate = date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+  return isRealDate ? `${yyyy}-${mm}-${dd}` : ''
+}
+
 // Русские формы множественного числа: pluralizeRu(3, ['сет', 'сета', 'сетов'])
 // → 'сета'. Учитывает исключения 11–14.
 export function pluralizeRu(count: number, forms: readonly [string, string, string]): string {

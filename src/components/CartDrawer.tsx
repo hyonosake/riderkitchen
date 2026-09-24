@@ -1,6 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { CartItem } from '../content/types'
-import { formatPrice, formatPhoneRuOnChange, isPhoneRuComplete, pluralizeRu } from '../lib/format'
+import {
+  formatPrice,
+  formatPhoneRuOnChange,
+  formatDateRu,
+  formatDateRuOnChange,
+  parseDateRuToIso,
+  isPhoneRuComplete,
+  pluralizeRu,
+} from '../lib/format'
 import { buildOrderText, buildWhatsAppHref, notifyTelegramOrder } from '../lib/order'
 import { exportOrderPdf } from '../lib/exportPdf'
 import { QtyStepper } from './PriceStepper'
@@ -33,10 +41,38 @@ export function CartDrawer({
   onClear: () => void
 }) {
   const [name, setName] = useState('')
+  // date — ISO («YYYY-MM-DD»), контракт для WhatsApp-текста, PDF и
+  // Telegram-бота (../riderkitchen-bot). dateText — то, что видит и
+  // печатает пользователь («ДД.ММ.ГГГГ»); в date попадает только когда
+  // dateText — реальная дата не раньше сегодняшней.
   const [date, setDate] = useState('')
+  const [dateText, setDateText] = useState('')
+  const dateNativeRef = useRef<HTMLInputElement>(null)
   const [phone, setPhone] = useState('')
   const [isPdfBusy, setIsPdfBusy] = useState(false)
   const phoneComplete = isPhoneRuComplete(phone)
+
+  const handleDateTextChange = (raw: string) => {
+    const masked = formatDateRuOnChange(raw, dateText)
+    setDateText(masked)
+    const iso = parseDateRuToIso(masked)
+    setDate(iso && iso >= todayIso() ? iso : '')
+  }
+
+  const handleNativeDateChange = (iso: string) => {
+    setDate(iso)
+    setDateText(iso ? formatDateRu(iso) : '')
+  }
+
+  const openDateCalendar = () => {
+    const input = dateNativeRef.current
+    if (!input) return
+    if (typeof input.showPicker === 'function') {
+      input.showPicker()
+    } else {
+      input.focus()
+    }
+  }
 
   // На мобильных overflow:hidden на body не блокирует скролл под
   // открытой панелью (жест уходит на сайт под ней) — фиксируем body
@@ -186,14 +222,49 @@ export function CartDrawer({
           <label className="cart-drawer__label" htmlFor="cart-date">
             Дата заказа
           </label>
-          <input
-            id="cart-date"
-            className="cart-drawer__input"
-            type="date"
-            min={todayIso()}
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
-          />
+          <div className="cart-drawer__date-field">
+            <input
+              id="cart-date"
+              className="cart-drawer__input"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="ДД.ММ.ГГГГ"
+              value={dateText}
+              onChange={(event) => handleDateTextChange(event.target.value)}
+            />
+            <button
+              type="button"
+              className="cart-drawer__date-pick"
+              aria-label="Выбрать дату в календаре"
+              onClick={openDateCalendar}
+            >
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <rect x="2" y="3.5" width="12" height="10.5" rx="1.5" />
+                <path d="M2 6.5h12M5.5 2v3M10.5 2v3" />
+              </svg>
+            </button>
+            <input
+              ref={dateNativeRef}
+              type="date"
+              className="cart-drawer__date-native"
+              min={todayIso()}
+              value={date}
+              onChange={(event) => handleNativeDateChange(event.target.value)}
+              tabIndex={-1}
+              aria-hidden="true"
+            />
+          </div>
           <label className="cart-drawer__label" htmlFor="cart-phone">
             Телефон
           </label>
