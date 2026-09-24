@@ -39,3 +39,31 @@ export function buildSectionSummary(items: CartItem[]): Array<[string, number]> 
 export function buildWhatsAppHref(text: string): string {
     return `${contacts.whatsappHref}?text=${encodeURIComponent(text)}`
 }
+
+// Уведомление в Telegram-группу заказов (riderkitchen-bot, см. соседний
+// проект ../riderkitchen-bot): лучшее старание, не должно мешать
+// основному сценарию (переходу в WhatsApp) — ошибки проглатываются.
+// keepalive: true — запрос переживает уход со страницы по клику на
+// ссылку WhatsApp. Путь относительный: в проде nginx проксирует
+// /riderkitchen/api/ на бота (тот же origin, что и сайт).
+export function notifyTelegramOrder(
+    items: CartItem[],
+    total: number,
+    phone: string,
+    name = '',
+    date = '',
+): void {
+    const payload = {
+        name,
+        phone,
+        date,
+        items: items.map((item) => ({ name: item.name, qty: item.qty, price: item.price })),
+        total,
+    }
+    fetch(`${import.meta.env.BASE_URL}api/order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+        keepalive: true,
+    }).catch(() => {})
+}

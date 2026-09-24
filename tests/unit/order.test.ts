@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { contacts, menu, sets } from '../../src/content/menu'
 import type { CartItem } from '../../src/content/types'
-import { buildOrderText, buildSectionSummary, buildWhatsAppHref } from '../../src/lib/order'
+import { buildOrderText, buildSectionSummary, buildWhatsAppHref, notifyTelegramOrder } from '../../src/lib/order'
 
 // Фикстуры собираются из реального контента (src/content/menu.ts):
 // это чистые функции над контентом, мокать его незачем. Формат строк —
@@ -109,5 +109,50 @@ describe('buildWhatsAppHref', () => {
     const url = new URL(href)
     expect(url.pathname).toBe('/+79269101010') // e2e-контракт (cart.spec.ts)
     expect(url.searchParams.get('text')).toBe(text) // URL декодирует параметр
+  })
+})
+
+describe('notifyTelegramOrder', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  it('шлёт keepalive POST на api/order с минимальным составом позиций', () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 200 }))
+    vi.stubGlobal('fetch', fetchMock)
+
+    notifyTelegramOrder([omeletteItem, setItem], 999, PHONE, 'Иван', '2026-09-25')
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const [url, init] = fetchMock.mock.calls[0]
+    // BASE_URL прибит к '/riderkitchen/' в vite.config.ts (прод/дев), но в
+    // тестовом режиме vitest резолвит его как '/' — проверяем суффикс,
+    // не привязываясь к конкретному значению BASE_URL.
+    expect(url).toMatch(/\/api\/order$/)
+    expect(init.method).toBe('POST')
+    expect(init.keepalive).toBe(true)
+    expect(init.headers).toEqual({ 'Content-Type': 'application/json' })
+    expect(JSON.parse(init.body)).toEqual({
+      name: 'Иван',
+      phone: PHONE,
+      date: '2026-09-25',
+      items: [
+        { name: omeletteItem.name, qty: omeletteItem.qty, price: omeletteItem.price },
+        { name: setItem.name, qty: setItem.qty, price: setItem.price },
+      ],
+      total: 999,
+    })
+  })
+
+  it('не бросает исключение, если запрос упал (best-effort)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockRejectedValue(new Error('network down')),
+    )
+
+    expect(() => notifyTelegramOrder([omeletteItem], omeletteItem.price, PHONE)).not.toThrow()
+    // Даём отклонённому промису из .catch(() => {}) внутри разрешиться,
+    // иначе vitest пожалуется на unhandled rejection из другого теста.
+    await new Promise((resolve) => setTimeout(resolve, 0))
   })
 })

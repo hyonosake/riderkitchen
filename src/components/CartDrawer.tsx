@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { CartItem } from '../content/types'
 import { formatPrice, formatPhoneRuOnChange, isPhoneRuComplete, pluralizeRu } from '../lib/format'
-import { buildOrderText, buildWhatsAppHref } from '../lib/order'
+import { buildOrderText, buildWhatsAppHref, notifyTelegramOrder } from '../lib/order'
 import { exportOrderPdf } from '../lib/exportPdf'
 import { QtyStepper } from './PriceStepper'
 
@@ -211,7 +211,11 @@ export function CartDrawer({
             href={phoneComplete ? whatsappHref : undefined}
             aria-disabled={!phoneComplete}
             onClick={(event) => {
-              if (!phoneComplete) event.preventDefault()
+              if (!phoneComplete) {
+                event.preventDefault()
+                return
+              }
+              notifyTelegramOrder(items, total, phone, name, date)
             }}
           >
             Сформировать заказ
