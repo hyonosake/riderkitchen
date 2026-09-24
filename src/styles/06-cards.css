@@ -269,11 +269,14 @@
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
-    scroll-padding-left: 20px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    gap: 12px;
     margin: 0 -20px;
-    padding: 0 20px 10px;
+    /* Боковой паддинг = (ширина экрана − ширина карточки) / 2, чтобы
+       текущая карточка вставала по центру, а соседние симметрично
+       выглядывали по краям (в т.ч. первая и последняя карточки ленты). */
+    padding: 0 calc((100vw - min(76vw, 300px)) / 2) 10px;
   }
 
   html[data-mobile-layout='carousel'] .menu-section__grid::-webkit-scrollbar {
@@ -284,7 +287,7 @@
   html[data-mobile-layout='carousel'] .set-card {
     flex: 0 0 auto;
     width: min(76vw, 300px);
-    scroll-snap-align: start;
+    scroll-snap-align: center;
   }
 }
 
