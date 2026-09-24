@@ -56,23 +56,23 @@ function startPreview() {
   })
 }
 
-const { proc, url } = await startPreview()
+const { url } = await startPreview()
 
-try {
-  const browser = await chromium.launch()
-  try {
-    const page = await browser.newPage()
-    await page.goto(url, { waitUntil: 'domcontentloaded' })
-    // Ждём реальный признак того, что React смонтировался и отрисовал
-    // меню, а не networkidle — иначе пререндер завязан на загрузку
-    // шрифтов с Google Fonts (медленно и не нужно для самого HTML).
-    await page.waitForSelector('.dish-card__name')
-    const html = await page.evaluate(() => document.documentElement.outerHTML)
-    await writeFile('dist/index.html', `<!doctype html>\n${html}\n`)
-    console.log('Пререндер: dist/index.html обновлён статическим HTML.')
-  } finally {
-    await browser.close()
-  }
-} finally {
-  proc.kill()
-}
+const browser = await chromium.launch()
+const page = await browser.newPage()
+await page.goto(url, { waitUntil: 'domcontentloaded' })
+// Ждём реальный признак того, что React смонтировался и отрисовал
+// меню, а не networkidle — иначе пререндер завязан на загрузку
+// шрифтов с Google Fonts (медленно и не нужно для самого HTML).
+await page.waitForSelector('.dish-card__name')
+const html = await page.evaluate(() => document.documentElement.outerHTML)
+await writeFile('dist/index.html', `<!doctype html>\n${html}\n`)
+console.log('Пререндер: dist/index.html обновлён статическим HTML.')
+
+// Файл уже записан — дальше graceful browser.close()/proc.kill() не
+// нужны. В Docker-сборке (RUN npm run build) PID 1 — голый `sh -c`,
+// который не пожинает зомби-процессы Chromium (zygote/рендереры), и
+// ожидание закрытия браузера виснет навсегда. Контейнер сборки всё
+// равно останавливается сразу после этого шага — process.exit()
+// обрывает vite preview и Chromium вместе с ним.
+process.exit(0)
